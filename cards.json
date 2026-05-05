@@ -1,0 +1,1508 @@
+[
+  {
+    "id": "fool",
+    "name_ru": "Шут",
+    "name_en": "The Fool",
+    "arcana": "major",
+    "suit": null,
+    "number": 0,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/9/90/RWS_Tarot_00_Fool.jpg",
+    "keywords_upright": [
+      "новые начинания",
+      "невинность",
+      "спонтанность",
+      "вера",
+      "приключение"
+    ],
+    "keywords_reversed": [
+      "безрассудство",
+      "наивность",
+      "риск",
+      "глупость"
+    ],
+    "essence": "Дух свободы и беспечности на пороге неизведанного. Карта чистого начала."
+  },
+  {
+    "id": "magician",
+    "name_ru": "Маг",
+    "name_en": "The Magician",
+    "arcana": "major",
+    "suit": null,
+    "number": 1,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/de/RWS_Tarot_01_Magician.jpg",
+    "keywords_upright": [
+      "сила воли",
+      "мастерство",
+      "концентрация",
+      "проявление",
+      "находчивость"
+    ],
+    "keywords_reversed": [
+      "манипуляция",
+      "обман",
+      "иллюзия"
+    ],
+    "essence": "Способность направлять энергию вселенной в реальность через намерение."
+  },
+  {
+    "id": "priestess",
+    "name_ru": "Верховная жрица",
+    "name_en": "The High Priestess",
+    "arcana": "major",
+    "suit": null,
+    "number": 2,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/8/88/RWS_Tarot_02_High_Priestess.jpg",
+    "keywords_upright": [
+      "интуиция",
+      "тайна",
+      "подсознание",
+      "женская мудрость",
+      "внутренний голос"
+    ],
+    "keywords_reversed": [
+      "скрытая истина",
+      "поверхностность",
+      "потеря интуиции"
+    ],
+    "essence": "Хранительница тайн и проводник к глубинному знанию через интуицию."
+  },
+  {
+    "id": "empress",
+    "name_ru": "Императрица",
+    "name_en": "The Empress",
+    "arcana": "major",
+    "suit": null,
+    "number": 3,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/d2/RWS_Tarot_03_Empress.jpg",
+    "keywords_upright": [
+      "изобилие",
+      "плодородие",
+      "материнство",
+      "красота",
+      "природа"
+    ],
+    "keywords_reversed": [
+      "зависимость",
+      "застой",
+      "пустота"
+    ],
+    "essence": "Воплощение творческой и созидательной женственности, плодородия земли."
+  },
+  {
+    "id": "emperor",
+    "name_ru": "Император",
+    "name_en": "The Emperor",
+    "arcana": "major",
+    "suit": null,
+    "number": 4,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/c/c3/RWS_Tarot_04_Emperor.jpg",
+    "keywords_upright": [
+      "власть",
+      "структура",
+      "стабильность",
+      "отцовство",
+      "контроль"
+    ],
+    "keywords_reversed": [
+      "тирания",
+      "ригидность",
+      "потеря контроля"
+    ],
+    "essence": "Строгий порядок, защита и созидание устойчивых структур."
+  },
+  {
+    "id": "hierophant",
+    "name_ru": "Иерофант",
+    "name_en": "The Hierophant",
+    "arcana": "major",
+    "suit": null,
+    "number": 5,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/8/8d/RWS_Tarot_05_Hierophant.jpg",
+    "keywords_upright": [
+      "традиция",
+      "духовное наставничество",
+      "вера",
+      "обучение"
+    ],
+    "keywords_reversed": [
+      "догматизм",
+      "бунт против системы",
+      "поиск своего пути"
+    ],
+    "essence": "Мост между человеком и высшим знанием через традицию и наставника."
+  },
+  {
+    "id": "lovers",
+    "name_ru": "Влюблённые",
+    "name_en": "The Lovers",
+    "arcana": "major",
+    "suit": null,
+    "number": 6,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/3/3a/TheLovers.jpg",
+    "keywords_upright": [
+      "любовь",
+      "выбор",
+      "союз",
+      "ценности",
+      "гармония"
+    ],
+    "keywords_reversed": [
+      "разногласия",
+      "трудный выбор",
+      "дисбаланс"
+    ],
+    "essence": "Сердечный союз и важный выбор, определяющий путь."
+  },
+  {
+    "id": "chariot",
+    "name_ru": "Колесница",
+    "name_en": "The Chariot",
+    "arcana": "major",
+    "suit": null,
+    "number": 7,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/9/9b/RWS_Tarot_07_Chariot.jpg",
+    "keywords_upright": [
+      "победа",
+      "целеустремлённость",
+      "сила воли",
+      "движение"
+    ],
+    "keywords_reversed": [
+      "потеря контроля",
+      "застой",
+      "поражение"
+    ],
+    "essence": "Движение к цели через дисциплину и баланс противоположных сил."
+  },
+  {
+    "id": "strength",
+    "name_ru": "Сила",
+    "name_en": "Strength",
+    "arcana": "major",
+    "suit": null,
+    "number": 8,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/f/f5/RWS_Tarot_08_Strength.jpg",
+    "keywords_upright": [
+      "храбрость",
+      "внутренняя сила",
+      "терпение",
+      "сострадание"
+    ],
+    "keywords_reversed": [
+      "сомнение в себе",
+      "слабость",
+      "потеря веры"
+    ],
+    "essence": "Мягкая сила, побеждающая через любовь и терпение, а не насилие."
+  },
+  {
+    "id": "hermit",
+    "name_ru": "Отшельник",
+    "name_en": "The Hermit",
+    "arcana": "major",
+    "suit": null,
+    "number": 9,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/4/4d/RWS_Tarot_09_Hermit.jpg",
+    "keywords_upright": [
+      "уединение",
+      "поиск истины",
+      "самопознание",
+      "мудрость"
+    ],
+    "keywords_reversed": [
+      "изоляция",
+      "одиночество",
+      "отчуждение"
+    ],
+    "essence": "Свет внутреннего знания, обретаемый в тишине и одиночестве."
+  },
+  {
+    "id": "wheel",
+    "name_ru": "Колесо Фортуны",
+    "name_en": "Wheel of Fortune",
+    "arcana": "major",
+    "suit": null,
+    "number": 10,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/3/3c/RWS_Tarot_10_Wheel_of_Fortune.jpg",
+    "keywords_upright": [
+      "перемены",
+      "судьба",
+      "циклы",
+      "точка поворота",
+      "удача"
+    ],
+    "keywords_reversed": [
+      "неудача",
+      "сопротивление переменам"
+    ],
+    "essence": "Великий цикл судьбы — то, что было внизу, поднимется наверх."
+  },
+  {
+    "id": "justice",
+    "name_ru": "Справедливость",
+    "name_en": "Justice",
+    "arcana": "major",
+    "suit": null,
+    "number": 11,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/e/e0/RWS_Tarot_11_Justice.jpg",
+    "keywords_upright": [
+      "справедливость",
+      "истина",
+      "причина и следствие",
+      "ответственность"
+    ],
+    "keywords_reversed": [
+      "несправедливость",
+      "уход от ответственности"
+    ],
+    "essence": "Кармический баланс — каждое действие возвращается."
+  },
+  {
+    "id": "hanged",
+    "name_ru": "Повешенный",
+    "name_en": "The Hanged Man",
+    "arcana": "major",
+    "suit": null,
+    "number": 12,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/2/2b/RWS_Tarot_12_Hanged_Man.jpg",
+    "keywords_upright": [
+      "смена перспективы",
+      "пауза",
+      "жертва",
+      "просветление"
+    ],
+    "keywords_reversed": [
+      "сопротивление",
+      "застой",
+      "ненужная жертва"
+    ],
+    "essence": "Добровольная остановка ради нового видения мира."
+  },
+  {
+    "id": "death",
+    "name_ru": "Смерть",
+    "name_en": "Death",
+    "arcana": "major",
+    "suit": null,
+    "number": 13,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/d7/RWS_Tarot_13_Death.jpg",
+    "keywords_upright": [
+      "трансформация",
+      "конец цикла",
+      "обновление",
+      "освобождение"
+    ],
+    "keywords_reversed": [
+      "сопротивление переменам",
+      "застой",
+      "страх перемен"
+    ],
+    "essence": "Конец одного и начало другого. Великая трансформация."
+  },
+  {
+    "id": "temperance",
+    "name_ru": "Умеренность",
+    "name_en": "Temperance",
+    "arcana": "major",
+    "suit": null,
+    "number": 14,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/f/f8/RWS_Tarot_14_Temperance.jpg",
+    "keywords_upright": [
+      "баланс",
+      "гармония",
+      "терпение",
+      "интеграция"
+    ],
+    "keywords_reversed": [
+      "дисбаланс",
+      "крайности",
+      "нетерпение"
+    ],
+    "essence": "Алхимия противоположностей, рождающая исцеление."
+  },
+  {
+    "id": "devil",
+    "name_ru": "Дьявол",
+    "name_en": "The Devil",
+    "arcana": "major",
+    "suit": null,
+    "number": 15,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/5/55/RWS_Tarot_15_Devil.jpg",
+    "keywords_upright": [
+      "зависимость",
+      "соблазн",
+      "материализм",
+      "иллюзия ограничений"
+    ],
+    "keywords_reversed": [
+      "освобождение",
+      "разрыв оков",
+      "осознание"
+    ],
+    "essence": "То, что держит нас в плену — но цепи лишь иллюзорны."
+  },
+  {
+    "id": "tower",
+    "name_ru": "Башня",
+    "name_en": "The Tower",
+    "arcana": "major",
+    "suit": null,
+    "number": 16,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/5/53/RWS_Tarot_16_Tower.jpg",
+    "keywords_upright": [
+      "внезапные перемены",
+      "разрушение",
+      "откровение"
+    ],
+    "keywords_reversed": [
+      "избегание катастрофы",
+      "страх перемен"
+    ],
+    "essence": "Молния истины, разрушающая всё построенное на лжи."
+  },
+  {
+    "id": "star",
+    "name_ru": "Звезда",
+    "name_en": "The Star",
+    "arcana": "major",
+    "suit": null,
+    "number": 17,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/db/RWS_Tarot_17_Star.jpg",
+    "keywords_upright": [
+      "надежда",
+      "вдохновение",
+      "обновление",
+      "духовность"
+    ],
+    "keywords_reversed": [
+      "безнадёжность",
+      "уныние",
+      "потеря веры"
+    ],
+    "essence": "Свет в темноте, обещающий рассвет после бури."
+  },
+  {
+    "id": "moon",
+    "name_ru": "Луна",
+    "name_en": "The Moon",
+    "arcana": "major",
+    "suit": null,
+    "number": 18,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/7/7f/RWS_Tarot_18_Moon.jpg",
+    "keywords_upright": [
+      "иллюзия",
+      "интуиция",
+      "тайна",
+      "тревога"
+    ],
+    "keywords_reversed": [
+      "рассеивание иллюзий",
+      "ясность"
+    ],
+    "essence": "Мир теней и снов, где правда скрыта за пеленой страха."
+  },
+  {
+    "id": "sun",
+    "name_ru": "Солнце",
+    "name_en": "The Sun",
+    "arcana": "major",
+    "suit": null,
+    "number": 19,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/1/17/RWS_Tarot_19_Sun.jpg",
+    "keywords_upright": [
+      "радость",
+      "успех",
+      "ясность",
+      "жизненная сила"
+    ],
+    "keywords_reversed": [
+      "временная грусть",
+      "недостаток уверенности"
+    ],
+    "essence": "Чистый свет радости и осознанной правды о себе."
+  },
+  {
+    "id": "judgement",
+    "name_ru": "Суд",
+    "name_en": "Judgement",
+    "arcana": "major",
+    "suit": null,
+    "number": 20,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/dd/RWS_Tarot_20_Judgement.jpg",
+    "keywords_upright": [
+      "пробуждение",
+      "обновление",
+      "призвание",
+      "прощение"
+    ],
+    "keywords_reversed": [
+      "сомнения в себе",
+      "уход от призвания"
+    ],
+    "essence": "Зов изнутри к новой жизни и принятию своей миссии."
+  },
+  {
+    "id": "world",
+    "name_ru": "Мир",
+    "name_en": "The World",
+    "arcana": "major",
+    "suit": null,
+    "number": 21,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/f/ff/RWS_Tarot_21_World.jpg",
+    "keywords_upright": [
+      "завершение",
+      "целостность",
+      "достижение",
+      "интеграция"
+    ],
+    "keywords_reversed": [
+      "незавершённость",
+      "застой перед финалом"
+    ],
+    "essence": "Великий цикл замкнулся — путь пройден, начинается новый."
+  },
+  {
+    "id": "wands_1",
+    "name_ru": "Туз жезлов",
+    "name_en": "Ace of Wands",
+    "arcana": "minor",
+    "suit": "wands",
+    "number": 1,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/1/11/Wands01.jpg",
+    "keywords_upright": [
+      "новое начало",
+      "потенциал",
+      "дар",
+      "семя"
+    ],
+    "keywords_reversed": [
+      "заблокированный потенциал",
+      "промах"
+    ],
+    "essence": "Чистое начало стихии. Стихия: огонь, страсть, действие, творчество"
+  },
+  {
+    "id": "wands_2",
+    "name_ru": "Двойка жезлов",
+    "name_en": "Two of Wands",
+    "arcana": "minor",
+    "suit": "wands",
+    "number": 2,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/0/0f/Wands02.jpg",
+    "keywords_upright": [
+      "баланс",
+      "выбор",
+      "партнёрство"
+    ],
+    "keywords_reversed": [
+      "дисбаланс",
+      "разлад"
+    ],
+    "essence": "Двойственность и выбор. Стихия: огонь, страсть, действие, творчество"
+  },
+  {
+    "id": "wands_3",
+    "name_ru": "Тройка жезлов",
+    "name_en": "Three of Wands",
+    "arcana": "minor",
+    "suit": "wands",
+    "number": 3,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/f/ff/Wands03.jpg",
+    "keywords_upright": [
+      "рост",
+      "сотрудничество",
+      "первые плоды"
+    ],
+    "keywords_reversed": [
+      "разлад"
+    ],
+    "essence": "Развитие через содружество. Стихия: огонь, страсть, действие, творчество"
+  },
+  {
+    "id": "wands_4",
+    "name_ru": "Четвёрка жезлов",
+    "name_en": "Four of Wands",
+    "arcana": "minor",
+    "suit": "wands",
+    "number": 4,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/a/a4/Wands04.jpg",
+    "keywords_upright": [
+      "стабильность",
+      "основа",
+      "укрытие"
+    ],
+    "keywords_reversed": [
+      "застой",
+      "скука"
+    ],
+    "essence": "Устойчивость и фундамент. Стихия: огонь, страсть, действие, творчество"
+  },
+  {
+    "id": "wands_5",
+    "name_ru": "Пятёрка жезлов",
+    "name_en": "Five of Wands",
+    "arcana": "minor",
+    "suit": "wands",
+    "number": 5,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/9/9d/Wands05.jpg",
+    "keywords_upright": [
+      "конфликт",
+      "потеря",
+      "испытание"
+    ],
+    "keywords_reversed": [
+      "восстановление",
+      "примирение"
+    ],
+    "essence": "Кризис и проверка на прочность. Стихия: огонь, страсть, действие, творчество"
+  },
+  {
+    "id": "wands_6",
+    "name_ru": "Шестёрка жезлов",
+    "name_en": "Six of Wands",
+    "arcana": "minor",
+    "suit": "wands",
+    "number": 6,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/3/3b/Wands06.jpg",
+    "keywords_upright": [
+      "гармония",
+      "помощь",
+      "признание"
+    ],
+    "keywords_reversed": [
+      "неблагодарность"
+    ],
+    "essence": "Восстановление баланса. Стихия: огонь, страсть, действие, творчество"
+  },
+  {
+    "id": "wands_7",
+    "name_ru": "Семёрка жезлов",
+    "name_en": "Seven of Wands",
+    "arcana": "minor",
+    "suit": "wands",
+    "number": 7,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/e/e4/Wands07.jpg",
+    "keywords_upright": [
+      "размышление",
+      "оценка",
+      "стратегия"
+    ],
+    "keywords_reversed": [
+      "саботаж",
+      "обман"
+    ],
+    "essence": "Внутренний выбор и стратегия. Стихия: огонь, страсть, действие, творчество"
+  },
+  {
+    "id": "wands_8",
+    "name_ru": "Восьмёрка жезлов",
+    "name_en": "Eight of Wands",
+    "arcana": "minor",
+    "suit": "wands",
+    "number": 8,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Wands08.jpg",
+    "keywords_upright": [
+      "мастерство",
+      "движение",
+      "усердие"
+    ],
+    "keywords_reversed": [
+      "застой",
+      "потеря фокуса"
+    ],
+    "essence": "Активное действие и труд. Стихия: огонь, страсть, действие, творчество"
+  },
+  {
+    "id": "wands_9",
+    "name_ru": "Девятка жезлов",
+    "name_en": "Nine of Wands",
+    "arcana": "minor",
+    "suit": "wands",
+    "number": 9,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/4/4d/Tarot_Nine_of_Wands.jpg",
+    "keywords_upright": [
+      "осуществление",
+      "сила",
+      "результат"
+    ],
+    "keywords_reversed": [
+      "разочарование",
+      "усталость"
+    ],
+    "essence": "Почти полное завершение. Стихия: огонь, страсть, действие, творчество"
+  },
+  {
+    "id": "wands_10",
+    "name_ru": "Десятка жезлов",
+    "name_en": "Ten of Wands",
+    "arcana": "minor",
+    "suit": "wands",
+    "number": 10,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/0/0b/Wands10.jpg",
+    "keywords_upright": [
+      "завершение",
+      "груз",
+      "вершина"
+    ],
+    "keywords_reversed": [
+      "конец одного и начало другого"
+    ],
+    "essence": "Конец цикла. Стихия: огонь, страсть, действие, творчество"
+  },
+  {
+    "id": "wands_11",
+    "name_ru": "Паж жезлов",
+    "name_en": "Page of Wands",
+    "arcana": "minor",
+    "suit": "wands",
+    "number": 11,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/6/6a/Wands11.jpg",
+    "keywords_upright": [
+      "учёба",
+      "новости",
+      "юность стихии"
+    ],
+    "keywords_reversed": [
+      "незрелость",
+      "промедление"
+    ],
+    "essence": "Юный посланник стихии. Стихия: огонь, страсть, действие, творчество"
+  },
+  {
+    "id": "wands_12",
+    "name_ru": "Рыцарь жезлов",
+    "name_en": "Knight of Wands",
+    "arcana": "minor",
+    "suit": "wands",
+    "number": 12,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/1/16/Wands12.jpg",
+    "keywords_upright": [
+      "движение",
+      "стремление",
+      "энергия"
+    ],
+    "keywords_reversed": [
+      "опрометчивость",
+      "застой"
+    ],
+    "essence": "Активный воин стихии. Стихия: огонь, страсть, действие, творчество"
+  },
+  {
+    "id": "wands_13",
+    "name_ru": "Королева жезлов",
+    "name_en": "Queen of Wands",
+    "arcana": "minor",
+    "suit": "wands",
+    "number": 13,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/0/0d/Wands13.jpg",
+    "keywords_upright": [
+      "мастерство стихии",
+      "интуитивная мудрость"
+    ],
+    "keywords_reversed": [
+      "тень мастерства"
+    ],
+    "essence": "Зрелая женская грань стихии. Стихия: огонь, страсть, действие, творчество"
+  },
+  {
+    "id": "wands_14",
+    "name_ru": "Король жезлов",
+    "name_en": "King of Wands",
+    "arcana": "minor",
+    "suit": "wands",
+    "number": 14,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/c/ce/Wands14.jpg",
+    "keywords_upright": [
+      "власть стихии",
+      "лидерство",
+      "опыт"
+    ],
+    "keywords_reversed": [
+      "авторитарность"
+    ],
+    "essence": "Зрелая мужская грань стихии. Стихия: огонь, страсть, действие, творчество"
+  },
+  {
+    "id": "cups_1",
+    "name_ru": "Туз кубков",
+    "name_en": "Ace of Cups",
+    "arcana": "minor",
+    "suit": "cups",
+    "number": 1,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/3/36/Cups01.jpg",
+    "keywords_upright": [
+      "новое начало",
+      "потенциал",
+      "дар",
+      "семя"
+    ],
+    "keywords_reversed": [
+      "заблокированный потенциал",
+      "промах"
+    ],
+    "essence": "Чистое начало стихии. Стихия: вода, эмоции, отношения, любовь"
+  },
+  {
+    "id": "cups_2",
+    "name_ru": "Двойка кубков",
+    "name_en": "Two of Cups",
+    "arcana": "minor",
+    "suit": "cups",
+    "number": 2,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/f/f8/Cups02.jpg",
+    "keywords_upright": [
+      "баланс",
+      "выбор",
+      "партнёрство"
+    ],
+    "keywords_reversed": [
+      "дисбаланс",
+      "разлад"
+    ],
+    "essence": "Двойственность и выбор. Стихия: вода, эмоции, отношения, любовь"
+  },
+  {
+    "id": "cups_3",
+    "name_ru": "Тройка кубков",
+    "name_en": "Three of Cups",
+    "arcana": "minor",
+    "suit": "cups",
+    "number": 3,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/7/7a/Cups03.jpg",
+    "keywords_upright": [
+      "рост",
+      "сотрудничество",
+      "первые плоды"
+    ],
+    "keywords_reversed": [
+      "разлад"
+    ],
+    "essence": "Развитие через содружество. Стихия: вода, эмоции, отношения, любовь"
+  },
+  {
+    "id": "cups_4",
+    "name_ru": "Четвёрка кубков",
+    "name_en": "Four of Cups",
+    "arcana": "minor",
+    "suit": "cups",
+    "number": 4,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/3/35/Cups04.jpg",
+    "keywords_upright": [
+      "стабильность",
+      "основа",
+      "укрытие"
+    ],
+    "keywords_reversed": [
+      "застой",
+      "скука"
+    ],
+    "essence": "Устойчивость и фундамент. Стихия: вода, эмоции, отношения, любовь"
+  },
+  {
+    "id": "cups_5",
+    "name_ru": "Пятёрка кубков",
+    "name_en": "Five of Cups",
+    "arcana": "minor",
+    "suit": "cups",
+    "number": 5,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/d7/Cups05.jpg",
+    "keywords_upright": [
+      "конфликт",
+      "потеря",
+      "испытание"
+    ],
+    "keywords_reversed": [
+      "восстановление",
+      "примирение"
+    ],
+    "essence": "Кризис и проверка на прочность. Стихия: вода, эмоции, отношения, любовь"
+  },
+  {
+    "id": "cups_6",
+    "name_ru": "Шестёрка кубков",
+    "name_en": "Six of Cups",
+    "arcana": "minor",
+    "suit": "cups",
+    "number": 6,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/1/17/Cups06.jpg",
+    "keywords_upright": [
+      "гармония",
+      "помощь",
+      "признание"
+    ],
+    "keywords_reversed": [
+      "неблагодарность"
+    ],
+    "essence": "Восстановление баланса. Стихия: вода, эмоции, отношения, любовь"
+  },
+  {
+    "id": "cups_7",
+    "name_ru": "Семёрка кубков",
+    "name_en": "Seven of Cups",
+    "arcana": "minor",
+    "suit": "cups",
+    "number": 7,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/a/ae/Cups07.jpg",
+    "keywords_upright": [
+      "размышление",
+      "оценка",
+      "стратегия"
+    ],
+    "keywords_reversed": [
+      "саботаж",
+      "обман"
+    ],
+    "essence": "Внутренний выбор и стратегия. Стихия: вода, эмоции, отношения, любовь"
+  },
+  {
+    "id": "cups_8",
+    "name_ru": "Восьмёрка кубков",
+    "name_en": "Eight of Cups",
+    "arcana": "minor",
+    "suit": "cups",
+    "number": 8,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/6/60/Cups08.jpg",
+    "keywords_upright": [
+      "мастерство",
+      "движение",
+      "усердие"
+    ],
+    "keywords_reversed": [
+      "застой",
+      "потеря фокуса"
+    ],
+    "essence": "Активное действие и труд. Стихия: вода, эмоции, отношения, любовь"
+  },
+  {
+    "id": "cups_9",
+    "name_ru": "Девятка кубков",
+    "name_en": "Nine of Cups",
+    "arcana": "minor",
+    "suit": "cups",
+    "number": 9,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/2/24/Cups09.jpg",
+    "keywords_upright": [
+      "осуществление",
+      "сила",
+      "результат"
+    ],
+    "keywords_reversed": [
+      "разочарование",
+      "усталость"
+    ],
+    "essence": "Почти полное завершение. Стихия: вода, эмоции, отношения, любовь"
+  },
+  {
+    "id": "cups_10",
+    "name_ru": "Десятка кубков",
+    "name_en": "Ten of Cups",
+    "arcana": "minor",
+    "suit": "cups",
+    "number": 10,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/8/84/Cups10.jpg",
+    "keywords_upright": [
+      "завершение",
+      "груз",
+      "вершина"
+    ],
+    "keywords_reversed": [
+      "конец одного и начало другого"
+    ],
+    "essence": "Конец цикла. Стихия: вода, эмоции, отношения, любовь"
+  },
+  {
+    "id": "cups_11",
+    "name_ru": "Паж кубков",
+    "name_en": "Page of Cups",
+    "arcana": "minor",
+    "suit": "cups",
+    "number": 11,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/a/ad/Cups11.jpg",
+    "keywords_upright": [
+      "учёба",
+      "новости",
+      "юность стихии"
+    ],
+    "keywords_reversed": [
+      "незрелость",
+      "промедление"
+    ],
+    "essence": "Юный посланник стихии. Стихия: вода, эмоции, отношения, любовь"
+  },
+  {
+    "id": "cups_12",
+    "name_ru": "Рыцарь кубков",
+    "name_en": "Knight of Cups",
+    "arcana": "minor",
+    "suit": "cups",
+    "number": 12,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Cups12.jpg",
+    "keywords_upright": [
+      "движение",
+      "стремление",
+      "энергия"
+    ],
+    "keywords_reversed": [
+      "опрометчивость",
+      "застой"
+    ],
+    "essence": "Активный воин стихии. Стихия: вода, эмоции, отношения, любовь"
+  },
+  {
+    "id": "cups_13",
+    "name_ru": "Королева кубков",
+    "name_en": "Queen of Cups",
+    "arcana": "minor",
+    "suit": "cups",
+    "number": 13,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/6/62/Cups13.jpg",
+    "keywords_upright": [
+      "мастерство стихии",
+      "интуитивная мудрость"
+    ],
+    "keywords_reversed": [
+      "тень мастерства"
+    ],
+    "essence": "Зрелая женская грань стихии. Стихия: вода, эмоции, отношения, любовь"
+  },
+  {
+    "id": "cups_14",
+    "name_ru": "Король кубков",
+    "name_en": "King of Cups",
+    "arcana": "minor",
+    "suit": "cups",
+    "number": 14,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/0/04/Cups14.jpg",
+    "keywords_upright": [
+      "власть стихии",
+      "лидерство",
+      "опыт"
+    ],
+    "keywords_reversed": [
+      "авторитарность"
+    ],
+    "essence": "Зрелая мужская грань стихии. Стихия: вода, эмоции, отношения, любовь"
+  },
+  {
+    "id": "swords_1",
+    "name_ru": "Туз мечей",
+    "name_en": "Ace of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "number": 1,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/1/1a/Swords01.jpg",
+    "keywords_upright": [
+      "новое начало",
+      "потенциал",
+      "дар",
+      "семя"
+    ],
+    "keywords_reversed": [
+      "заблокированный потенциал",
+      "промах"
+    ],
+    "essence": "Чистое начало стихии. Стихия: воздух, мысли, конфликты, истина"
+  },
+  {
+    "id": "swords_2",
+    "name_ru": "Двойка мечей",
+    "name_en": "Two of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "number": 2,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/9/9e/Swords02.jpg",
+    "keywords_upright": [
+      "баланс",
+      "выбор",
+      "партнёрство"
+    ],
+    "keywords_reversed": [
+      "дисбаланс",
+      "разлад"
+    ],
+    "essence": "Двойственность и выбор. Стихия: воздух, мысли, конфликты, истина"
+  },
+  {
+    "id": "swords_3",
+    "name_ru": "Тройка мечей",
+    "name_en": "Three of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "number": 3,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/0/02/Swords03.jpg",
+    "keywords_upright": [
+      "рост",
+      "сотрудничество",
+      "первые плоды"
+    ],
+    "keywords_reversed": [
+      "разлад"
+    ],
+    "essence": "Развитие через содружество. Стихия: воздух, мысли, конфликты, истина"
+  },
+  {
+    "id": "swords_4",
+    "name_ru": "Четвёрка мечей",
+    "name_en": "Four of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "number": 4,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/b/bf/Swords04.jpg",
+    "keywords_upright": [
+      "стабильность",
+      "основа",
+      "укрытие"
+    ],
+    "keywords_reversed": [
+      "застой",
+      "скука"
+    ],
+    "essence": "Устойчивость и фундамент. Стихия: воздух, мысли, конфликты, истина"
+  },
+  {
+    "id": "swords_5",
+    "name_ru": "Пятёрка мечей",
+    "name_en": "Five of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "number": 5,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/2/23/Swords05.jpg",
+    "keywords_upright": [
+      "конфликт",
+      "потеря",
+      "испытание"
+    ],
+    "keywords_reversed": [
+      "восстановление",
+      "примирение"
+    ],
+    "essence": "Кризис и проверка на прочность. Стихия: воздух, мысли, конфликты, истина"
+  },
+  {
+    "id": "swords_6",
+    "name_ru": "Шестёрка мечей",
+    "name_en": "Six of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "number": 6,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/2/29/Swords06.jpg",
+    "keywords_upright": [
+      "гармония",
+      "помощь",
+      "признание"
+    ],
+    "keywords_reversed": [
+      "неблагодарность"
+    ],
+    "essence": "Восстановление баланса. Стихия: воздух, мысли, конфликты, истина"
+  },
+  {
+    "id": "swords_7",
+    "name_ru": "Семёрка мечей",
+    "name_en": "Seven of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "number": 7,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/3/34/Swords07.jpg",
+    "keywords_upright": [
+      "размышление",
+      "оценка",
+      "стратегия"
+    ],
+    "keywords_reversed": [
+      "саботаж",
+      "обман"
+    ],
+    "essence": "Внутренний выбор и стратегия. Стихия: воздух, мысли, конфликты, истина"
+  },
+  {
+    "id": "swords_8",
+    "name_ru": "Восьмёрка мечей",
+    "name_en": "Eight of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "number": 8,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/a/a7/Swords08.jpg",
+    "keywords_upright": [
+      "мастерство",
+      "движение",
+      "усердие"
+    ],
+    "keywords_reversed": [
+      "застой",
+      "потеря фокуса"
+    ],
+    "essence": "Активное действие и труд. Стихия: воздух, мысли, конфликты, истина"
+  },
+  {
+    "id": "swords_9",
+    "name_ru": "Девятка мечей",
+    "name_en": "Nine of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "number": 9,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Swords09.jpg",
+    "keywords_upright": [
+      "осуществление",
+      "сила",
+      "результат"
+    ],
+    "keywords_reversed": [
+      "разочарование",
+      "усталость"
+    ],
+    "essence": "Почти полное завершение. Стихия: воздух, мысли, конфликты, истина"
+  },
+  {
+    "id": "swords_10",
+    "name_ru": "Десятка мечей",
+    "name_en": "Ten of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "number": 10,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/d4/Swords10.jpg",
+    "keywords_upright": [
+      "завершение",
+      "груз",
+      "вершина"
+    ],
+    "keywords_reversed": [
+      "конец одного и начало другого"
+    ],
+    "essence": "Конец цикла. Стихия: воздух, мысли, конфликты, истина"
+  },
+  {
+    "id": "swords_11",
+    "name_ru": "Паж мечей",
+    "name_en": "Page of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "number": 11,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Swords11.jpg",
+    "keywords_upright": [
+      "учёба",
+      "новости",
+      "юность стихии"
+    ],
+    "keywords_reversed": [
+      "незрелость",
+      "промедление"
+    ],
+    "essence": "Юный посланник стихии. Стихия: воздух, мысли, конфликты, истина"
+  },
+  {
+    "id": "swords_12",
+    "name_ru": "Рыцарь мечей",
+    "name_en": "Knight of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "number": 12,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/b/b0/Swords12.jpg",
+    "keywords_upright": [
+      "движение",
+      "стремление",
+      "энергия"
+    ],
+    "keywords_reversed": [
+      "опрометчивость",
+      "застой"
+    ],
+    "essence": "Активный воин стихии. Стихия: воздух, мысли, конфликты, истина"
+  },
+  {
+    "id": "swords_13",
+    "name_ru": "Королева мечей",
+    "name_en": "Queen of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "number": 13,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/d4/Swords13.jpg",
+    "keywords_upright": [
+      "мастерство стихии",
+      "интуитивная мудрость"
+    ],
+    "keywords_reversed": [
+      "тень мастерства"
+    ],
+    "essence": "Зрелая женская грань стихии. Стихия: воздух, мысли, конфликты, истина"
+  },
+  {
+    "id": "swords_14",
+    "name_ru": "Король мечей",
+    "name_en": "King of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "number": 14,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/3/33/Swords14.jpg",
+    "keywords_upright": [
+      "власть стихии",
+      "лидерство",
+      "опыт"
+    ],
+    "keywords_reversed": [
+      "авторитарность"
+    ],
+    "essence": "Зрелая мужская грань стихии. Стихия: воздух, мысли, конфликты, истина"
+  },
+  {
+    "id": "pentacles_1",
+    "name_ru": "Туз пентаклей",
+    "name_en": "Ace of Pentacles",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "number": 1,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/f/fd/Pents01.jpg",
+    "keywords_upright": [
+      "новое начало",
+      "потенциал",
+      "дар",
+      "семя"
+    ],
+    "keywords_reversed": [
+      "заблокированный потенциал",
+      "промах"
+    ],
+    "essence": "Чистое начало стихии. Стихия: земля, материя, деньги, ремесло"
+  },
+  {
+    "id": "pentacles_2",
+    "name_ru": "Двойка пентаклей",
+    "name_en": "Two of Pentacles",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "number": 2,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/9/9f/Pents02.jpg",
+    "keywords_upright": [
+      "баланс",
+      "выбор",
+      "партнёрство"
+    ],
+    "keywords_reversed": [
+      "дисбаланс",
+      "разлад"
+    ],
+    "essence": "Двойственность и выбор. Стихия: земля, материя, деньги, ремесло"
+  },
+  {
+    "id": "pentacles_3",
+    "name_ru": "Тройка пентаклей",
+    "name_en": "Three of Pentacles",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "number": 3,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/4/42/Pents03.jpg",
+    "keywords_upright": [
+      "рост",
+      "сотрудничество",
+      "первые плоды"
+    ],
+    "keywords_reversed": [
+      "разлад"
+    ],
+    "essence": "Развитие через содружество. Стихия: земля, материя, деньги, ремесло"
+  },
+  {
+    "id": "pentacles_4",
+    "name_ru": "Четвёрка пентаклей",
+    "name_en": "Four of Pentacles",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "number": 4,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/3/35/Pents04.jpg",
+    "keywords_upright": [
+      "стабильность",
+      "основа",
+      "укрытие"
+    ],
+    "keywords_reversed": [
+      "застой",
+      "скука"
+    ],
+    "essence": "Устойчивость и фундамент. Стихия: земля, материя, деньги, ремесло"
+  },
+  {
+    "id": "pentacles_5",
+    "name_ru": "Пятёрка пентаклей",
+    "name_en": "Five of Pentacles",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "number": 5,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/9/96/Pents05.jpg",
+    "keywords_upright": [
+      "конфликт",
+      "потеря",
+      "испытание"
+    ],
+    "keywords_reversed": [
+      "восстановление",
+      "примирение"
+    ],
+    "essence": "Кризис и проверка на прочность. Стихия: земля, материя, деньги, ремесло"
+  },
+  {
+    "id": "pentacles_6",
+    "name_ru": "Шестёрка пентаклей",
+    "name_en": "Six of Pentacles",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "number": 6,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/a/a6/Pents06.jpg",
+    "keywords_upright": [
+      "гармония",
+      "помощь",
+      "признание"
+    ],
+    "keywords_reversed": [
+      "неблагодарность"
+    ],
+    "essence": "Восстановление баланса. Стихия: земля, материя, деньги, ремесло"
+  },
+  {
+    "id": "pentacles_7",
+    "name_ru": "Семёрка пентаклей",
+    "name_en": "Seven of Pentacles",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "number": 7,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/6/6a/Pents07.jpg",
+    "keywords_upright": [
+      "размышление",
+      "оценка",
+      "стратегия"
+    ],
+    "keywords_reversed": [
+      "саботаж",
+      "обман"
+    ],
+    "essence": "Внутренний выбор и стратегия. Стихия: земля, материя, деньги, ремесло"
+  },
+  {
+    "id": "pentacles_8",
+    "name_ru": "Восьмёрка пентаклей",
+    "name_en": "Eight of Pentacles",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "number": 8,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/4/49/Pents08.jpg",
+    "keywords_upright": [
+      "мастерство",
+      "движение",
+      "усердие"
+    ],
+    "keywords_reversed": [
+      "застой",
+      "потеря фокуса"
+    ],
+    "essence": "Активное действие и труд. Стихия: земля, материя, деньги, ремесло"
+  },
+  {
+    "id": "pentacles_9",
+    "name_ru": "Девятка пентаклей",
+    "name_en": "Nine of Pentacles",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "number": 9,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/f/f0/Pents09.jpg",
+    "keywords_upright": [
+      "осуществление",
+      "сила",
+      "результат"
+    ],
+    "keywords_reversed": [
+      "разочарование",
+      "усталость"
+    ],
+    "essence": "Почти полное завершение. Стихия: земля, материя, деньги, ремесло"
+  },
+  {
+    "id": "pentacles_10",
+    "name_ru": "Десятка пентаклей",
+    "name_en": "Ten of Pentacles",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "number": 10,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/4/42/Pents10.jpg",
+    "keywords_upright": [
+      "завершение",
+      "груз",
+      "вершина"
+    ],
+    "keywords_reversed": [
+      "конец одного и начало другого"
+    ],
+    "essence": "Конец цикла. Стихия: земля, материя, деньги, ремесло"
+  },
+  {
+    "id": "pentacles_11",
+    "name_ru": "Паж пентаклей",
+    "name_en": "Page of Pentacles",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "number": 11,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/e/ec/Pents11.jpg",
+    "keywords_upright": [
+      "учёба",
+      "новости",
+      "юность стихии"
+    ],
+    "keywords_reversed": [
+      "незрелость",
+      "промедление"
+    ],
+    "essence": "Юный посланник стихии. Стихия: земля, материя, деньги, ремесло"
+  },
+  {
+    "id": "pentacles_12",
+    "name_ru": "Рыцарь пентаклей",
+    "name_en": "Knight of Pentacles",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "number": 12,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/d5/Pents12.jpg",
+    "keywords_upright": [
+      "движение",
+      "стремление",
+      "энергия"
+    ],
+    "keywords_reversed": [
+      "опрометчивость",
+      "застой"
+    ],
+    "essence": "Активный воин стихии. Стихия: земля, материя, деньги, ремесло"
+  },
+  {
+    "id": "pentacles_13",
+    "name_ru": "Королева пентаклей",
+    "name_en": "Queen of Pentacles",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "number": 13,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/8/88/Pents13.jpg",
+    "keywords_upright": [
+      "мастерство стихии",
+      "интуитивная мудрость"
+    ],
+    "keywords_reversed": [
+      "тень мастерства"
+    ],
+    "essence": "Зрелая женская грань стихии. Стихия: земля, материя, деньги, ремесло"
+  },
+  {
+    "id": "pentacles_14",
+    "name_ru": "Король пентаклей",
+    "name_en": "King of Pentacles",
+    "arcana": "minor",
+    "suit": "pentacles",
+    "number": 14,
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/1/1c/Pents14.jpg",
+    "keywords_upright": [
+      "власть стихии",
+      "лидерство",
+      "опыт"
+    ],
+    "keywords_reversed": [
+      "авторитарность"
+    ],
+    "essence": "Зрелая мужская грань стихии. Стихия: земля, материя, деньги, ремесло"
+  }
+]

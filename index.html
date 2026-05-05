@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Карта недели</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg-deep: #0a0118;
+    --bg-mid: #1a0a3e;
+    --bg-glow: #2d1b69;
+    --gold: #d4a04c;
+    --gold-bright: #f4c574;
+    --gold-soft: #8a6d2c;
+    --ink: #e8d9b8;
+    --ink-dim: #a09478;
+    --shadow-deep: rgba(0, 0, 0, 0.6);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+    height: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    font-family: 'Manrope', system-ui, sans-serif;
+    background: var(--bg-deep);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-image:
+        radial-gradient(ellipse at 20% 10%, rgba(102, 51, 153, 0.4) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 90%, rgba(60, 30, 110, 0.5) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, var(--bg-mid) 0%, var(--bg-deep) 80%);
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        radial-gradient(1px 1px at 20px 30px, rgba(255, 255, 255, 0.6), transparent),
+        radial-gradient(1px 1px at 60px 70px, rgba(255, 255, 255, 0.4), transparent),
+        radial-gradient(1.5px 1.5px at 130px 40px, rgba(244, 197, 116, 0.7), transparent),
+        radial-gradient(1px 1px at 200px 90px, rgba(255, 255, 255, 0.5), transparent),
+        radial-gradient(1px 1px at 280px 30px, rgba(255, 255, 255, 0.3), transparent),
+        radial-gradient(1.5px 1.5px at 90px 150px, rgba(244, 197, 116, 0.5), transparent),
+        radial-gradient(1px 1px at 240px 180px, rgba(255, 255, 255, 0.4), transparent),
+        radial-gradient(1px 1px at 50px 220px, rgba(255, 255, 255, 0.5), transparent);
+    background-size: 300px 300px;
+    background-repeat: repeat;
+    animation: twinkle 8s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+.app {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    padding: 24px 16px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.intro {
+    text-align: center;
+    margin-bottom: 32px;
+    margin-top: 16px;
+}
+
+.intro__eyebrow {
+    font-family: 'Manrope', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+    font-weight: 500;
+}
+
+.intro__title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+    font-size: 32px;
+    line-height: 1.1;
+    color: var(--ink);
+    margin-bottom: 16px;
+    font-style: italic;
+}
+
+.intro__title em {
+    color: var(--gold-bright);
+    font-style: normal;
+    font-weight: 600;
+}
+
+.intro__sub {
+    font-family: 'Manrope', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink-dim);
+    max-width: 320px;
+    margin: 0 auto;
+}
+
+.deck {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 24px 0 32px;
+    perspective: 1000px;
+}
+
+.card {
+    width: 96px;
+    height: 168px;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform-style: preserve-3d;
+}
+
+.card:hover, .card:active { transform: translateY(-12px); }
+
+.card[data-state="picked-other"] {
+    opacity: 0.3;
+    filter: grayscale(0.6);
+    pointer-events: none;
+}
+
+.card[data-state="picked"] {
+    transform: translateY(-12px) scale(1.05);
+}
+
+.card__back {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #2d1b69 0%, #1a0a3e 50%, #0a0118 100%);
+    border: 2px solid var(--gold);
+    box-shadow:
+        0 8px 24px var(--shadow-deep),
+        inset 0 0 20px rgba(212, 160, 76, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.card__back::before {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border: 1px solid var(--gold-soft);
+    border-radius: 4px;
+    pointer-events: none;
+}
+
+.card__back-symbol {
+    width: 60%;
+    height: 60%;
+    color: var(--gold);
+    opacity: 0.85;
+}
+
+.card__num {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    font-style: italic;
+    color: var(--gold-bright);
+    z-index: 2;
+}
+
+.reveal {
+    display: none;
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    animation: rise-up 0.6s ease-out;
+}
+
+.reveal.is-active { display: block; }
+
+@keyframes rise-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.reveal__card {
+    width: 200px;
+    height: 340px;
+    margin: 0 auto 24px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow:
+        0 16px 40px var(--shadow-deep),
+        0 0 0 1px var(--gold),
+        0 0 60px rgba(212, 160, 76, 0.3);
+    animation: card-glow 3s ease-in-out infinite;
+    background: linear-gradient(135deg, #2d1b69, #1a0a3e);
+}
+
+@keyframes card-glow {
+    0%, 100% { box-shadow: 0 16px 40px var(--shadow-deep), 0 0 0 1px var(--gold), 0 0 60px rgba(212, 160, 76, 0.3); }
+    50% { box-shadow: 0 16px 40px var(--shadow-deep), 0 0 0 1px var(--gold-bright), 0 0 80px rgba(244, 197, 116, 0.5); }
+}
+
+.reveal__card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.6s ease;
+}
+
+.reveal__name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--gold-bright);
+    margin-bottom: 4px;
+    font-style: italic;
+}
+
+.reveal__position {
+    font-family: 'Manrope', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold-soft);
+    margin-bottom: 12px;
+}
+
+.reveal__keywords {
+    font-family: 'Manrope', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: 24px;
+}
+
+.reveal__divider {
+    width: 32px;
+    height: 1px;
+    background: var(--gold-soft);
+    margin: 24px auto;
+    position: relative;
+}
+
+.reveal__divider::before {
+    content: '✦';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--bg-deep);
+    color: var(--gold);
+    padding: 0 6px;
+    font-size: 12px;
+}
+
+.reveal__text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 19px;
+    line-height: 1.55;
+    color: var(--ink);
+    text-align: left;
+    max-width: 340px;
+    margin: 0 auto;
+}
+
+.reveal__text p { margin-bottom: 14px; }
+
+.reveal__footer {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(212, 160, 76, 0.2);
+    font-family: 'Manrope', sans-serif;
+    font-size: 13px;
+    color: var(--ink-dim);
+    line-height: 1.5;
+}
+
+.reveal__footer-cta {
+    color: var(--gold-soft);
+    font-weight: 500;
+    margin-top: 8px;
+    font-style: italic;
+}
+
+.loader {
+    display: none;
+    text-align: center;
+    padding: 60px 16px;
+}
+
+.loader.is-active { display: block; }
+
+.loader__symbol {
+    font-size: 48px;
+    color: var(--gold);
+    animation: spin 4s linear infinite;
+    margin-bottom: 16px;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.loader__text {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: var(--ink);
+}
+
+.error {
+    display: none;
+    text-align: center;
+    max-width: 320px;
+    margin: 60px auto;
+}
+
+.error.is-active { display: block; }
+
+.error__title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    color: var(--gold);
+    margin-bottom: 12px;
+}
+
+.error__text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink-dim);
+}
+
+@media (max-height: 680px) {
+    .intro__title { font-size: 26px; }
+    .card { width: 84px; height: 148px; }
+    .reveal__card { width: 170px; height: 290px; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+    <section class="screen-pick" id="screenPick">
+        <div class="intro">
+            <div class="intro__eyebrow">✦ Карта недели ✦</div>
+            <h1 class="intro__title">Что я <em>увижу</em><br>в эту неделю?</h1>
+            <p class="intro__sub">Выберите ту карту, к которой ведёт сердце. Не размышляйте долго — доверьтесь первому импульсу.</p>
+        </div>
+        <div class="deck" id="deck"></div>
+    </section>
+
+    <section class="loader" id="screenLoader">
+        <div class="loader__symbol">✦</div>
+        <p class="loader__text">Раскрываю карту...</p>
+    </section>
+
+    <section class="reveal" id="screenReveal">
+        <div class="reveal__card">
+            <img id="revealImage" src="" alt="">
+        </div>
+        <h2 class="reveal__name" id="revealName"></h2>
+        <div class="reveal__position" id="revealPosition" style="display: none;">перевёрнутая</div>
+        <div class="reveal__keywords" id="revealKeywords"></div>
+        <div class="reveal__divider"></div>
+        <div class="reveal__text" id="revealText"></div>
+        <div class="reveal__footer">
+            <p>Эта карта не случайна — она выбрала вас.</p>
+            <p class="reveal__footer-cta">Закройте окно и возвращайтесь к каналу.</p>
+        </div>
+    </section>
+
+    <section class="error" id="screenError">
+        <h2 class="error__title">✦ Тишина ✦</h2>
+        <p class="error__text">На эту неделю карты ещё не разложены. Загляните позже — расклад появится в понедельник.</p>
+    </section>
+</div>
+
+<script>
+const tg = window.Telegram?.WebApp;
+if (tg) {
+    tg.ready();
+    tg.expand();
+    tg.setHeaderColor('#0a0118');
+    tg.setBackgroundColor('#0a0118');
+}
+
+let predictions = null;
+let cardsData = null;
+
+const CARD_BACK_SVG = `<svg class="card__back-symbol" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="0.8">
+  <circle cx="50" cy="50" r="35" stroke-dasharray="2 2"/>
+  <circle cx="50" cy="50" r="20"/>
+  <path d="M50 15 L55 35 L75 35 L60 47 L65 67 L50 55 L35 67 L40 47 L25 35 L45 35 Z" stroke-width="1" fill="currentColor" fill-opacity="0.3"/>
+  <circle cx="50" cy="50" r="3" fill="currentColor"/>
+</svg>`;
+
+async function loadData() {
+    try {
+        const [predRes, cardsRes] = await Promise.all([
+            fetch('predictions.json?t=' + Date.now()),
+            fetch('cards.json?t=' + Date.now()),
+        ]);
+        if (!predRes.ok || !cardsRes.ok) throw new Error('Не удалось загрузить данные');
+        predictions = await predRes.json();
+        const allCards = await cardsRes.json();
+        cardsData = Object.fromEntries(allCards.map(c => [c.id, c]));
+        renderDeck();
+    } catch (e) {
+        console.error('Load error:', e);
+        showError();
+    }
+}
+
+function showError() {
+    document.getElementById('screenPick').style.display = 'none';
+    document.getElementById('screenError').classList.add('is-active');
+}
+
+function renderDeck() {
+    if (!predictions || !predictions.cards || predictions.cards.length !== 3) {
+        showError();
+        return;
+    }
+    const deck = document.getElementById('deck');
+    deck.innerHTML = '';
+    predictions.cards.forEach((cardEntry, idx) => {
+        const cardEl = document.createElement('div');
+        cardEl.className = 'card';
+        cardEl.dataset.idx = idx;
+        cardEl.innerHTML = `
+            <div class="card__back">${CARD_BACK_SVG}</div>
+            <div class="card__num">${['I', 'II', 'III'][idx]}</div>
+        `;
+        cardEl.addEventListener('click', () => pickCard(idx));
+        deck.appendChild(cardEl);
+    });
+}
+
+async function pickCard(idx) {
+    const cards = document.querySelectorAll('.card');
+    cards.forEach((c, i) => {
+        c.dataset.state = i === idx ? 'picked' : 'picked-other';
+    });
+    if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+    await sleep(800);
+    document.getElementById('screenPick').style.display = 'none';
+    document.getElementById('screenLoader').classList.add('is-active');
+    await sleep(1800);
+    document.getElementById('screenLoader').classList.remove('is-active');
+    revealCard(idx);
+}
+
+function revealCard(idx) {
+    const cardEntry = predictions.cards[idx];
+    const cardData = cardsData[cardEntry.card_id];
+    if (!cardData) {
+        console.error('Card not found:', cardEntry.card_id);
+        showError();
+        return;
+    }
+
+    const isReversed = cardEntry.is_reversed === true;
+
+    const reveal = document.getElementById('screenReveal');
+    const img = document.getElementById('revealImage');
+    img.src = cardData.image_url;
+    img.alt = cardData.name_ru;
+    img.style.transform = isReversed ? 'rotate(180deg)' : 'none';
+
+    document.getElementById('revealName').textContent = cardData.name_ru;
+
+    const positionEl = document.getElementById('revealPosition');
+    if (isReversed) {
+        positionEl.textContent = '⤳ перевёрнутая';
+        positionEl.style.display = 'block';
+    } else {
+        positionEl.style.display = 'none';
+    }
+
+    const keywords = isReversed
+        ? (cardData.keywords_reversed || []).slice(0, 3)
+        : (cardData.keywords_upright || []).slice(0, 3);
+    document.getElementById('revealKeywords').textContent = keywords.join(' · ');
+
+    const textEl = document.getElementById('revealText');
+    textEl.innerHTML = cardEntry.prediction
+        .split(/\n\n+/)
+        .map(p => `<p>${escapeHtml(p.trim())}</p>`)
+        .join('');
+
+    reveal.classList.add('is-active');
+    if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+loadData();
+</script>
+
+</body>
+</html>

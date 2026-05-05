@@ -1,0 +1,51 @@
+name: Generate Weekly Predictions
+
+# Воскресенье 22:00 МСК = 19:00 UTC
+# Запускается за 11 часов до публикации в понедельник 9:00 МСК — даёт запас
+# на случай, если Groq упал и нужно пересоздать вручную
+
+on:
+  schedule:
+    - cron: "0 19 * * 0"
+  workflow_dispatch:  # разрешаем ручной запуск через интерфейс GitHub
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tarot-predictions
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: bot/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r bot/requirements.txt
+
+      - name: Generate predictions
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: python bot/generate_predictions.py
+
+      - name: Commit updated predictions
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet webapp/predictions.json; then
+            echo "predictions.json не изменился — коммит не нужен"
+          else
+            git add webapp/predictions.json
+            git commit -m "chore: weekly predictions $(date -u +'%Y-%m-%d')"
+            git push
+          fi
