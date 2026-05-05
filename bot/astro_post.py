@@ -5,13 +5,15 @@
 1. Случайно выбирает знак из 12, исключая последние 12 опубликованных
    (чтобы цикл был ровный — каждый знак минимум раз в 12 постов).
 2. Через Groq генерирует короткое бытовое наблюдение в духе твиттер-скетча.
-3. Постит без картинки (чистый текст).
+3. Постит текстом + кнопка «🔮 Получить расклад», ведущая в WebApp
+   в режим меню тем (?startapp=daily).
 
 ENV:
     TELEGRAM_BOT_TOKEN
     TELEGRAM_CHAT_ID
     GROQ_API_KEY
-    TIPS_URL (опц.)
+    WEBAPP_URL — direct link на Mini App, например
+                 https://t.me/please_taro_bot/please_taro
 """
 from __future__ import annotations
 
@@ -207,7 +209,23 @@ def build_caption(sign, observation):
     )
 
 
-def send_message(token, chat_id, text):
+def build_keyboard(webapp_url):
+    """Кнопка для поста — открывает WebApp в режиме меню тем (daily).
+
+    Telegram распознаёт ссылки t.me/<bot>/<app>?startapp=<param> и
+    открывает WebApp с этим параметром. WebApp читает start_param
+    и переключается в нужный режим.
+    """
+    separator = "&" if "?" in webapp_url else "?"
+    daily_url = f"{webapp_url}{separator}startapp=daily"
+    return {
+        "inline_keyboard": [
+            [{"text": "🔮 Получить расклад", "url": daily_url}]
+        ]
+    }
+
+
+def send_message(token, chat_id, text, reply_markup=None):
     url = TG_API.format(token=token, method="sendMessage")
     payload = {
         "chat_id": chat_id,
@@ -215,6 +233,8 @@ def send_message(token, chat_id, text):
         "parse_mode": "HTML",
         "disable_web_page_preview": True,
     }
+    if reply_markup:
+        payload["reply_markup"] = json.dumps(reply_markup, ensure_ascii=False)
     r = requests.post(url, data=payload, timeout=30,
                       headers={"User-Agent": USER_AGENT})
     if r.status_code != 200:
@@ -227,6 +247,7 @@ def main():
     token = env("TELEGRAM_BOT_TOKEN")
     chat_id = env("TELEGRAM_CHAT_ID")
     api_key = env("GROQ_API_KEY")
+    webapp_url = env("WEBAPP_URL")
 
     history = load_history()
     sign = pick_sign(history)
@@ -241,7 +262,8 @@ def main():
     print(f"  Сгенерировано {len(observation)} символов", file=sys.stderr)
 
     caption = build_caption(sign, observation)
-    send_message(token, chat_id, caption)
+    keyboard = build_keyboard(webapp_url)
+    send_message(token, chat_id, caption, reply_markup=keyboard)
 
     history.setdefault("published_ids", []).append(sign["id"])
     history["last_run"] = msk_now_iso()
