@@ -1,0 +1,51 @@
+name: Generate Themed Bank
+
+# 1-го числа каждого месяца в 03:00 UTC = 06:00 МСК
+# Запускаем рано, чтобы было время на повторный запуск если упадёт
+on:
+  schedule:
+    - cron: "0 3 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tarot-themed-bank
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30  # 78 карт × ~1 сек = ~5 мин, с запасом
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: bot/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r bot/requirements.txt
+
+      - name: Generate themed bank
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: python bot/generate_themed.py
+
+      - name: Commit updated bank
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet webapp/cards.json; then
+            echo "cards.json не изменился — коммит не нужен"
+          else
+            git add webapp/cards.json
+            git commit -m "chore: themed predictions bank $(date -u +'%Y-%m-%d')"
+            git push
+          fi
