@@ -1,0 +1,52 @@
+name: Astro Post
+
+# Два раза в день: 13:00 МСК = 10:00 UTC и 20:00 МСК = 17:00 UTC
+on:
+  schedule:
+    - cron: "0 10 * * *"   # 13:00 МСК — обеденный пик
+    - cron: "0 17 * * *"   # 20:00 МСК — вечерний пик
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tarot-astro-post
+  cancel-in-progress: false
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: bot/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r bot/requirements.txt
+
+      - name: Post astro observation
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          WEBAPP_URL: ${{ secrets.WEBAPP_URL }}
+        run: python bot/astro_post.py
+
+      - name: Commit updated history
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet bot/astro_history.json; then
+            echo "astro_history.json не изменился"
+          else
+            git add bot/astro_history.json
+            git commit -m "chore: astro post history $(date -u +'%Y-%m-%d %H:%M')"
+            git push
+          fi
