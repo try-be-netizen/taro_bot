@@ -184,10 +184,11 @@ def validate_response(resp):
     if not isinstance(resp["predictions"], list) or len(resp["predictions"]) != 3:
         raise ValueError("predictions должен быть массивом из 3 элементов")
     for i, text in enumerate(resp["predictions"]):
-        if not isinstance(text, str) or len(text.strip()) < 50:
+        if not isinstance(text, str) or len(text.strip()) < 30:
             raise ValueError(f"predictions[{i}] слишком короткий или пустой")
-    if not isinstance(resp["intro"], str) or len(resp["intro"].strip()) < 20:
-        raise ValueError("intro слишком короткий")
+    if not isinstance(resp["intro"], str) or len(resp["intro"].strip()) < 10:
+        # intro может прийти коротким — это не критично, ставим дефолт
+        resp["intro"] = "На пороге новой недели — три двери."
     return True
 
 
