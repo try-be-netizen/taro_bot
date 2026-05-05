@@ -23,10 +23,7 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
-html, body {
-    height: 100%;
-    overflow-x: hidden;
-}
+html, body { height: 100%; overflow-x: hidden; }
 
 body {
     font-family: 'Manrope', system-ui, sans-serif;
@@ -44,10 +41,8 @@ body {
 body::before {
     content: '';
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     background-image:
         radial-gradient(1px 1px at 20px 30px, rgba(255, 255, 255, 0.6), transparent),
         radial-gradient(1px 1px at 60px 70px, rgba(255, 255, 255, 0.4), transparent),
@@ -79,11 +74,8 @@ body::before {
     align-items: center;
 }
 
-.intro {
-    text-align: center;
-    margin-bottom: 32px;
-    margin-top: 16px;
-}
+/* === ОБЩИЕ ЭКРАНЫ === */
+.intro { text-align: center; margin-bottom: 28px; margin-top: 8px; }
 
 .intro__eyebrow {
     font-family: 'Manrope', sans-serif;
@@ -98,10 +90,10 @@ body::before {
 .intro__title {
     font-family: 'Cormorant Garamond', serif;
     font-weight: 500;
-    font-size: 32px;
-    line-height: 1.1;
+    font-size: 30px;
+    line-height: 1.15;
     color: var(--ink);
-    margin-bottom: 16px;
+    margin-bottom: 14px;
     font-style: italic;
 }
 
@@ -112,7 +104,6 @@ body::before {
 }
 
 .intro__sub {
-    font-family: 'Manrope', sans-serif;
     font-size: 14px;
     line-height: 1.6;
     color: var(--ink-dim);
@@ -120,6 +111,7 @@ body::before {
     margin: 0 auto;
 }
 
+/* === РЕЖИМ WEEKLY: 3 КАРТЫ === */
 .deck {
     display: flex;
     justify-content: center;
@@ -134,7 +126,6 @@ body::before {
     position: relative;
     cursor: pointer;
     transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    transform-style: preserve-3d;
 }
 
 .card:hover, .card:active { transform: translateY(-12px); }
@@ -145,9 +136,7 @@ body::before {
     pointer-events: none;
 }
 
-.card[data-state="picked"] {
-    transform: translateY(-12px) scale(1.05);
-}
+.card[data-state="picked"] { transform: translateY(-12px) scale(1.05); }
 
 .card__back {
     width: 100%;
@@ -155,9 +144,7 @@ body::before {
     border-radius: 8px;
     background: linear-gradient(135deg, #2d1b69 0%, #1a0a3e 50%, #0a0118 100%);
     border: 2px solid var(--gold);
-    box-shadow:
-        0 8px 24px var(--shadow-deep),
-        inset 0 0 20px rgba(212, 160, 76, 0.2);
+    box-shadow: 0 8px 24px var(--shadow-deep), inset 0 0 20px rgba(212, 160, 76, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -193,6 +180,126 @@ body::before {
     z-index: 2;
 }
 
+/* === РЕЖИМ DAILY: МЕНЮ ТЕМ === */
+.themes {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 340px;
+    margin: 16px 0 24px;
+}
+
+.theme-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    background: rgba(45, 27, 105, 0.4);
+    border: 1px solid rgba(212, 160, 76, 0.3);
+    border-radius: 12px;
+    color: var(--ink);
+    cursor: pointer;
+    font-family: 'Manrope', sans-serif;
+    font-size: 15px;
+    text-align: left;
+    transition: all 0.25s ease;
+    backdrop-filter: blur(4px);
+    width: 100%;
+}
+
+.theme-btn:hover, .theme-btn:active {
+    background: rgba(45, 27, 105, 0.7);
+    border-color: var(--gold);
+    transform: translateY(-2px);
+}
+
+.theme-btn__icon {
+    font-size: 22px;
+    flex-shrink: 0;
+}
+
+.theme-btn__label {
+    flex: 1;
+    color: var(--ink);
+}
+
+.theme-btn__hint {
+    color: var(--ink-dim);
+    font-size: 12px;
+    opacity: 0.7;
+    flex-shrink: 0;
+}
+
+/* === ПОЛЕ ВВОДА «СВОЙ ВОПРОС» === */
+.custom-input {
+    display: none;
+    width: 100%;
+    max-width: 340px;
+    margin: 8px 0 24px;
+    flex-direction: column;
+    gap: 12px;
+    animation: rise-up 0.4s ease-out;
+}
+
+.custom-input.is-active { display: flex; }
+
+.custom-input textarea {
+    width: 100%;
+    min-height: 90px;
+    padding: 14px 16px;
+    background: rgba(45, 27, 105, 0.4);
+    border: 1px solid rgba(212, 160, 76, 0.3);
+    border-radius: 12px;
+    color: var(--ink);
+    font-family: 'Manrope', sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    resize: none;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.custom-input textarea:focus {
+    border-color: var(--gold);
+}
+
+.custom-input textarea::placeholder {
+    color: var(--ink-dim);
+    opacity: 0.6;
+    font-style: italic;
+}
+
+.custom-input__hint {
+    font-size: 12px;
+    color: var(--ink-dim);
+    text-align: center;
+    line-height: 1.5;
+}
+
+.btn-primary {
+    padding: 14px 24px;
+    background: var(--gold);
+    border: none;
+    border-radius: 10px;
+    color: var(--bg-deep);
+    font-family: 'Manrope', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-primary:hover, .btn-primary:active { background: var(--gold-bright); }
+
+.btn-primary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* === ЭКРАН РАСКРЫТИЯ КАРТЫ === */
 .reveal {
     display: none;
     width: 100%;
@@ -206,6 +313,15 @@ body::before {
 @keyframes rise-up {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+.reveal__theme {
+    font-family: 'Manrope', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
 }
 
 .reveal__card {
@@ -294,23 +410,25 @@ body::before {
 
 .reveal__text p { margin-bottom: 14px; }
 
-.reveal__footer {
+.reveal__back {
     margin-top: 32px;
-    padding-top: 24px;
-    border-top: 1px solid rgba(212, 160, 76, 0.2);
+    padding: 12px 20px;
+    background: transparent;
+    border: 1px solid rgba(212, 160, 76, 0.3);
+    border-radius: 8px;
+    color: var(--ink-dim);
     font-family: 'Manrope', sans-serif;
     font-size: 13px;
-    color: var(--ink-dim);
-    line-height: 1.5;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
-.reveal__footer-cta {
-    color: var(--gold-soft);
-    font-weight: 500;
-    margin-top: 8px;
-    font-style: italic;
+.reveal__back:hover, .reveal__back:active {
+    border-color: var(--gold);
+    color: var(--ink);
 }
 
+/* === ЛОАДЕР === */
 .loader {
     display: none;
     text-align: center;
@@ -338,13 +456,8 @@ body::before {
     color: var(--ink);
 }
 
-.error {
-    display: none;
-    text-align: center;
-    max-width: 320px;
-    margin: 60px auto;
-}
-
+/* === ОШИБКА === */
+.error { display: none; text-align: center; max-width: 320px; margin: 60px auto; }
 .error.is-active { display: block; }
 
 .error__title {
@@ -354,11 +467,7 @@ body::before {
     margin-bottom: 12px;
 }
 
-.error__text {
-    font-size: 14px;
-    line-height: 1.6;
-    color: var(--ink-dim);
-}
+.error__text { font-size: 14px; line-height: 1.6; color: var(--ink-dim); }
 
 @media (max-height: 680px) {
     .intro__title { font-size: 26px; }
@@ -370,7 +479,8 @@ body::before {
 <body>
 
 <div class="app">
-    <section class="screen-pick" id="screenPick">
+    <!-- РЕЖИМ WEEKLY: 3 карты (старый расклад) -->
+    <section class="screen-pick" id="screenPick" style="display: none;">
         <div class="intro">
             <div class="intro__eyebrow">✦ Карта недели ✦</div>
             <h1 class="intro__title">Что я <em>увижу</em><br>в эту неделю?</h1>
@@ -379,12 +489,51 @@ body::before {
         <div class="deck" id="deck"></div>
     </section>
 
-    <section class="loader" id="screenLoader">
-        <div class="loader__symbol">✦</div>
-        <p class="loader__text">Раскрываю карту...</p>
+    <!-- РЕЖИМ DAILY: меню тем -->
+    <section class="screen-themes" id="screenThemes" style="display: none;">
+        <div class="intro">
+            <div class="intro__eyebrow">✦ Расклад дня ✦</div>
+            <h1 class="intro__title">О чём <em>спросить</em><br>карту сегодня?</h1>
+            <p class="intro__sub">Выберите тему — и одна карта откроется специально для вашего вопроса.</p>
+        </div>
+        <div class="themes">
+            <button class="theme-btn" data-theme="love">
+                <span class="theme-btn__icon">💗</span>
+                <span class="theme-btn__label">Любовь и отношения</span>
+                <span class="theme-btn__hint">→</span>
+            </button>
+            <button class="theme-btn" data-theme="career">
+                <span class="theme-btn__icon">⚜</span>
+                <span class="theme-btn__label">Карьера и работа</span>
+                <span class="theme-btn__hint">→</span>
+            </button>
+            <button class="theme-btn" data-theme="money">
+                <span class="theme-btn__icon">✦</span>
+                <span class="theme-btn__label">Финансы и деньги</span>
+                <span class="theme-btn__hint">→</span>
+            </button>
+            <button class="theme-btn" data-theme="custom">
+                <span class="theme-btn__icon">◈</span>
+                <span class="theme-btn__label">Свой вопрос</span>
+                <span class="theme-btn__hint">→</span>
+            </button>
+        </div>
+        <div class="custom-input" id="customInput">
+            <textarea id="customQuestion" placeholder="Сформулируйте свой вопрос... например: «Стоит ли мне сейчас менять работу?»" maxlength="300"></textarea>
+            <p class="custom-input__hint">Ясный вопрос — половина ответа. Карта услышит вашу формулировку.</p>
+            <button class="btn-primary" id="customSubmit">Раскрыть карту</button>
+        </div>
     </section>
 
+    <!-- ЛОАДЕР -->
+    <section class="loader" id="screenLoader">
+        <div class="loader__symbol">✦</div>
+        <p class="loader__text" id="loaderText">Раскрываю карту...</p>
+    </section>
+
+    <!-- ЭКРАН РАСКРЫТИЯ -->
     <section class="reveal" id="screenReveal">
+        <div class="reveal__theme" id="revealTheme" style="display: none;"></div>
         <div class="reveal__card">
             <img id="revealImage" src="" alt="">
         </div>
@@ -393,15 +542,13 @@ body::before {
         <div class="reveal__keywords" id="revealKeywords"></div>
         <div class="reveal__divider"></div>
         <div class="reveal__text" id="revealText"></div>
-        <div class="reveal__footer">
-            <p>Эта карта не случайна — она выбрала вас.</p>
-            <p class="reveal__footer-cta">Закройте окно и возвращайтесь к каналу.</p>
-        </div>
+        <button class="reveal__back" id="revealBack" style="display: none;">← Выбрать другую тему</button>
     </section>
 
+    <!-- ОШИБКА -->
     <section class="error" id="screenError">
         <h2 class="error__title">✦ Тишина ✦</h2>
-        <p class="error__text">На эту неделю карты ещё не разложены. Загляните позже — расклад появится в понедельник.</p>
+        <p class="error__text" id="errorText">На эту неделю карты ещё не разложены. Загляните позже.</p>
     </section>
 </div>
 
@@ -414,8 +561,22 @@ if (tg) {
     tg.setBackgroundColor('#0a0118');
 }
 
+// Определяем режим из startapp параметра
+function getMode() {
+    // Telegram передаёт startapp через initDataUnsafe.start_param
+    let param = tg?.initDataUnsafe?.start_param || '';
+    // Или через ?startapp=... в URL — для отладки в браузере
+    if (!param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        param = urlParams.get('startapp') || urlParams.get('tgWebAppStartParam') || '';
+    }
+    return param === 'daily' ? 'daily' : 'weekly';
+}
+
 let predictions = null;
 let cardsData = null;
+let allCards = null;
+let mode = getMode();
 
 const CARD_BACK_SVG = `<svg class="card__back-symbol" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="0.8">
   <circle cx="50" cy="50" r="35" stroke-dasharray="2 2"/>
@@ -424,33 +585,58 @@ const CARD_BACK_SVG = `<svg class="card__back-symbol" viewBox="0 0 100 100" fill
   <circle cx="50" cy="50" r="3" fill="currentColor"/>
 </svg>`;
 
+const THEME_LABELS = {
+    love:   'Любовь и отношения',
+    career: 'Карьера и работа',
+    money:  'Финансы и деньги',
+    custom: 'Свой вопрос',
+};
+
+const LOADER_TEXTS = {
+    weekly: 'Раскрываю карту...',
+    love:   'Колода слышит ваше сердце...',
+    career: 'Карты ищут ваш путь...',
+    money:  'Внимаю движению потоков...',
+    custom: 'Вслушиваюсь в ваш вопрос...',
+};
+
 async function loadData() {
     try {
-        const [predRes, cardsRes] = await Promise.all([
-            fetch('predictions.json?t=' + Date.now()),
-            fetch('cards.json?t=' + Date.now()),
-        ]);
-        if (!predRes.ok || !cardsRes.ok) throw new Error('Не удалось загрузить данные');
-        predictions = await predRes.json();
-        const allCards = await cardsRes.json();
+        const cardsRes = await fetch('cards.json?t=' + Date.now());
+        if (!cardsRes.ok) throw new Error('cards.json не загрузился');
+        allCards = await cardsRes.json();
         cardsData = Object.fromEntries(allCards.map(c => [c.id, c]));
-        renderDeck();
+
+        if (mode === 'weekly') {
+            const predRes = await fetch('predictions.json?t=' + Date.now());
+            if (!predRes.ok) throw new Error('predictions.json не загрузился');
+            predictions = await predRes.json();
+            renderWeekly();
+        } else {
+            renderDaily();
+        }
     } catch (e) {
         console.error('Load error:', e);
-        showError();
+        showError(mode === 'weekly'
+            ? 'На эту неделю карты ещё не разложены. Загляните позже — расклад появится в понедельник.'
+            : 'Не удалось загрузить данные. Попробуйте чуть позже.');
     }
 }
 
-function showError() {
+function showError(text) {
     document.getElementById('screenPick').style.display = 'none';
+    document.getElementById('screenThemes').style.display = 'none';
+    document.getElementById('errorText').textContent = text;
     document.getElementById('screenError').classList.add('is-active');
 }
 
-function renderDeck() {
+// === РЕЖИМ WEEKLY ===
+function renderWeekly() {
     if (!predictions || !predictions.cards || predictions.cards.length !== 3) {
-        showError();
+        showError('На эту неделю карты ещё не разложены. Загляните позже.');
         return;
     }
+    document.getElementById('screenPick').style.display = 'block';
     const deck = document.getElementById('deck');
     deck.innerHTML = '';
     predictions.cards.forEach((cardEntry, idx) => {
@@ -461,12 +647,12 @@ function renderDeck() {
             <div class="card__back">${CARD_BACK_SVG}</div>
             <div class="card__num">${['I', 'II', 'III'][idx]}</div>
         `;
-        cardEl.addEventListener('click', () => pickCard(idx));
+        cardEl.addEventListener('click', () => pickWeeklyCard(idx));
         deck.appendChild(cardEl);
     });
 }
 
-async function pickCard(idx) {
+async function pickWeeklyCard(idx) {
     const cards = document.querySelectorAll('.card');
     cards.forEach((c, i) => {
         c.dataset.state = i === idx ? 'picked' : 'picked-other';
@@ -474,22 +660,88 @@ async function pickCard(idx) {
     if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
     await sleep(800);
     document.getElementById('screenPick').style.display = 'none';
-    document.getElementById('screenLoader').classList.add('is-active');
+    showLoader('weekly');
     await sleep(1800);
-    document.getElementById('screenLoader').classList.remove('is-active');
-    revealCard(idx);
-}
+    hideLoader();
 
-function revealCard(idx) {
     const cardEntry = predictions.cards[idx];
     const cardData = cardsData[cardEntry.card_id];
-    if (!cardData) {
-        console.error('Card not found:', cardEntry.card_id);
-        showError();
-        return;
+    revealCard(cardData, cardEntry.is_reversed, cardEntry.prediction, null);
+}
+
+// === РЕЖИМ DAILY ===
+function renderDaily() {
+    document.getElementById('screenThemes').style.display = 'block';
+
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const theme = btn.dataset.theme;
+            if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+
+            if (theme === 'custom') {
+                // Показываем поле ввода, остальные кнопки оставляем
+                document.getElementById('customInput').classList.add('is-active');
+                document.getElementById('customQuestion').focus();
+            } else {
+                pickDailyCard(theme);
+            }
+        });
+    });
+
+    document.getElementById('customSubmit').addEventListener('click', () => {
+        const text = document.getElementById('customQuestion').value.trim();
+        if (text.length < 3) {
+            document.getElementById('customQuestion').focus();
+            return;
+        }
+        pickDailyCard('custom');
+    });
+}
+
+async function pickDailyCard(theme) {
+    if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+
+    document.getElementById('screenThemes').style.display = 'none';
+    showLoader(theme);
+
+    // Имитация «гадания»
+    const waitTime = theme === 'custom' ? 3500 : 2200;
+    await sleep(waitTime);
+
+    // Случайная карта
+    const card = allCards[Math.floor(Math.random() * allCards.length)];
+    // Случайная позиция (30% перевёрнутая)
+    const isReversed = Math.random() < 0.3;
+    const position = isReversed ? 'reversed' : 'upright';
+
+    // Берём предсказание из банка
+    let prediction = '';
+    if (card.themed_predictions
+        && card.themed_predictions[theme]
+        && card.themed_predictions[theme][position]) {
+        const variants = card.themed_predictions[theme][position];
+        prediction = Array.isArray(variants)
+            ? variants[Math.floor(Math.random() * variants.length)]
+            : variants;
     }
 
-    const isReversed = cardEntry.is_reversed === true;
+    if (!prediction) {
+        // Фоллбек если для этой карты ещё не сгенерили банк
+        prediction = isReversed
+            ? `Карта «${card.name_ru}» в перевёрнутом положении говорит о смещённой энергии — вглядитесь, что просит вашего внимания.`
+            : `Карта «${card.name_ru}» — это ${card.essence}`;
+    }
+
+    hideLoader();
+    revealCard(card, isReversed, prediction, theme);
+}
+
+// === ОБЩИЙ ЭКРАН РАСКРЫТИЯ ===
+function revealCard(cardData, isReversed, predictionText, theme) {
+    if (!cardData) {
+        showError('Карта потерялась. Попробуйте ещё раз.');
+        return;
+    }
 
     const reveal = document.getElementById('screenReveal');
     const img = document.getElementById('revealImage');
@@ -499,6 +751,16 @@ function revealCard(idx) {
 
     document.getElementById('revealName').textContent = cardData.name_ru;
 
+    // Заголовок темы (только для daily)
+    const themeEl = document.getElementById('revealTheme');
+    if (theme && THEME_LABELS[theme]) {
+        themeEl.textContent = `✦ ${THEME_LABELS[theme]} ✦`;
+        themeEl.style.display = 'block';
+    } else {
+        themeEl.style.display = 'none';
+    }
+
+    // Позиция
     const positionEl = document.getElementById('revealPosition');
     if (isReversed) {
         positionEl.textContent = '⤳ перевёрнутая';
@@ -507,20 +769,48 @@ function revealCard(idx) {
         positionEl.style.display = 'none';
     }
 
+    // Ключевые слова
     const keywords = isReversed
         ? (cardData.keywords_reversed || []).slice(0, 3)
         : (cardData.keywords_upright || []).slice(0, 3);
     document.getElementById('revealKeywords').textContent = keywords.join(' · ');
 
+    // Текст
     const textEl = document.getElementById('revealText');
-    textEl.innerHTML = cardEntry.prediction
+    textEl.innerHTML = predictionText
         .split(/\n\n+/)
         .map(p => `<p>${escapeHtml(p.trim())}</p>`)
         .join('');
 
+    // Кнопка «назад» только в режиме daily
+    const backBtn = document.getElementById('revealBack');
+    if (mode === 'daily') {
+        backBtn.style.display = 'inline-block';
+        backBtn.onclick = () => {
+            reveal.classList.remove('is-active');
+            // Сбрасываем поле ввода
+            document.getElementById('customInput').classList.remove('is-active');
+            document.getElementById('customQuestion').value = '';
+            renderDaily();
+        };
+    } else {
+        backBtn.style.display = 'none';
+    }
+
     reveal.classList.add('is-active');
     if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// === ХЕЛПЕРЫ ===
+function showLoader(textKey) {
+    document.getElementById('loaderText').textContent =
+        LOADER_TEXTS[textKey] || LOADER_TEXTS.weekly;
+    document.getElementById('screenLoader').classList.add('is-active');
+}
+
+function hideLoader() {
+    document.getElementById('screenLoader').classList.remove('is-active');
 }
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
