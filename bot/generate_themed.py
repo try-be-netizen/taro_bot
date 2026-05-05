@@ -1,29 +1,30 @@
 """
-Генератор банка тематических предсказаний.
+Генератор банка тематических предсказаний с персонализацией по знакам зодиака.
 
-Запускается раз в ~4 недели. Делает запрос к Groq на каждую карту и для
-каждой комбинации тема × положение генерирует ДВА варианта предсказания.
-
-Структура банка в cards.json:
+Структура банка (webapp/predictions_bank.json):
 {
-    "themed_predictions": {
-        "love":   {"upright": ["вар1", "вар2"], "reversed": ["вар1", "вар2"]},
-        "work":   {"upright": [...], "reversed": [...]},
-        "path":   {"upright": [...], "reversed": [...]},
-        "custom": {"upright": [...], "reversed": [...]}
+  "<card_id>": {
+    "<theme>": {                       # love | work | path | custom
+      "<position>": {                  # upright | reversed
+        "general":  ["вар1", "вар2"],  # для тех, кто не выбрал знак
+        "aries":    ["вар1"],          # для каждого из 12 знаков
+        "taurus":   ["вар1"],
+        ...
+        "pisces":   ["вар1"]
+      }
     }
+  }
 }
 
-Темы:
-  love   — любовь и отношения
-  work   — работа, карьера, деньги (объединено)
-  path   — я и мой путь, самопознание, важные решения
-  custom — ответ на неизвестный личный вопрос (для «Свой вопрос»)
+Объём: 78 карт × 4 темы × 2 положения × 14 ячеек (12 знаков + 2 general) ≈ 8736 текстов.
 
-Итого: 78 карт × 4 темы × 2 положения × 2 варианта = 1248 текстов.
+На каждую карту делаем 5 запросов к Groq:
+1. «general» — все 4 темы × 2 положения × 2 варианта = 16 текстов
+2-5. По одному запросу на каждую тему: 12 знаков × 2 положения = 24 текста
 
-ENV:
-    GROQ_API_KEY
+Итого 78 × 5 = 390 запросов. ~12 минут работы.
+
+ENV: GROQ_API_KEY
 """
 from __future__ import annotations
 
@@ -37,32 +38,47 @@ import requests
 
 ROOT = Path(__file__).parent.parent
 CARDS_PATH = ROOT / "webapp" / "cards.json"
+BANK_PATH = ROOT / "webapp" / "predictions_bank.json"
 
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 GROQ_MODEL = "llama-3.3-70b-versatile"
 GROQ_TIMEOUT = 90
-USER_AGENT = "ThemedTarotBank/1.0"
+USER_AGENT = "ThemedTarotBank/2.0"
 
 MAX_RETRIES = 3
-PAUSE_BETWEEN_CARDS = 0.5
+PAUSE_BETWEEN_REQUESTS = 0.4
 
 THEMES = {
     "love":   "любовь и отношения",
-    "work":   "работа, карьера и деньги — профессиональная и финансовая сфера",
-    "path":   "я и мой путь — самопознание, призвание, важные жизненные решения",
+    "work":   "работа, карьера и деньги, профессиональная сфера",
+    "path":   "самопознание, личный путь, важные жизненные решения, призвание",
     "custom": "ответ на неизвестный личный вопрос",
 }
 
+ZODIAC = [
+    ("aries",       "Овен",       "лидер, прямой, импульсивный, любит вызовы, воин"),
+    ("taurus",      "Телец",      "обстоятельный, чувственный, упрямый, любит уют и стабильность"),
+    ("gemini",      "Близнецы",   "любопытный, изменчивый, общительный, скачет с темы на тему"),
+    ("cancer",      "Рак",        "эмоциональный, заботливый, домашний, обидчивый"),
+    ("leo",         "Лев",        "яркий, щедрый, гордый, любит внимание и сцену"),
+    ("virgo",       "Дева",       "перфекционист, аналитик, тревожный, замечает детали"),
+    ("libra",       "Весы",       "ищет гармонию, эстет, нерешительный, дипломат"),
+    ("scorpio",     "Скорпион",   "интенсивный, проницательный, мстительный, страстный"),
+    ("sagittarius", "Стрелец",    "оптимист, ищет смысл, любит свободу и горизонты"),
+    ("capricorn",   "Козерог",    "трудоголик, серьёзный, долгосрочно мыслящий, амбициозный"),
+    ("aquarius",    "Водолей",    "оригинальный, отстранённый, идеалист, любит свободу"),
+    ("pisces",      "Рыбы",       "мечтательный, чувствительный, эмпат, теряется в реальности"),
+]
+ZODIAC_IDS = [z[0] for z in ZODIAC]
 POSITIONS = ["upright", "reversed"]
-VARIANTS_PER_CELL = 2  # сколько вариантов на карту+тему+положение
 
 
 def env(name, required=True):
-    value = os.environ.get(name, "").strip()
-    if required and not value:
-        print(f"ERROR: переменная {name} не задана", file=sys.stderr)
+    v = os.environ.get(name, "").strip()
+    if required and not v:
+        print(f"ERROR: {name} не задана", file=sys.stderr)
         sys.exit(1)
-    return value
+    return v
 
 
 def load_cards():
@@ -70,42 +86,52 @@ def load_cards():
         return json.load(f)
 
 
-def save_cards(cards):
-    with CARDS_PATH.open("w", encoding="utf-8") as f:
-        json.dump(cards, f, ensure_ascii=False, indent=2)
+def load_bank():
+    """Загружает существующий банк или создаёт пустой каркас."""
+    if BANK_PATH.exists():
+        try:
+            with BANK_PATH.open(encoding="utf-8") as f:
+                return json.load(f)
+        except (json.JSONDecodeError, OSError):
+            pass
+    return {}
 
 
-def build_prompt(card):
-    """Промпт на одну карту: 4 темы × 2 положения × 2 варианта = 16 текстов."""
+def save_bank(bank):
+    with BANK_PATH.open("w", encoding="utf-8") as f:
+        json.dump(bank, f, ensure_ascii=False, indent=2)
+
+
+# ============================================================
+# ЗАПРОС 1: общие тексты (general) — все темы и положения вместе
+# ============================================================
+
+def build_general_prompt(card):
     keywords_up = ", ".join(card["keywords_upright"][:5])
     keywords_rv = ", ".join(card["keywords_reversed"][:5])
 
     system = (
-        "Ты опытный таролог. Пишешь короткие, атмосферные предсказания на русском. "
-        "Стиль: благородный, мягкий, без оккультного штампа. Обращение на «вы». "
-        "Каждое предсказание — 2-3 предложения, около 200-280 знаков. "
-        "Никаких приветствий, подписей, упоминаний слов «карта» или «таро» — "
-        "пиши о ситуации напрямую. Без markdown и эмодзи. Без вводных «в любви...» "
-        "или «на работе...» — сразу к делу."
+        "Ты опытный таролог. Пишешь короткие, атмосферные предсказания на "
+        "русском. Стиль: благородный, мягкий, без оккультного штампа. "
+        "Обращение на «вы». Каждое предсказание — 2-3 предложения, около "
+        "200-280 знаков. Никаких приветствий, подписей, упоминаний слов "
+        "«карта» или «таро». Без markdown, без эмодзи. Без вводных «в любви...» "
+        "— сразу к делу."
     )
-
-    # Список нужных ключей для подсказки модели
-    key_lines = []
+    keys = []
     for theme_id, theme_desc in THEMES.items():
         for pos in POSITIONS:
             pos_ru = "прямая" if pos == "upright" else "перевёрнутая"
-            key = f"{theme_id}_{pos}"
-            key_lines.append(f"- {key} — {theme_desc}, {pos_ru}, два разных варианта")
+            keys.append(f"- {theme_id}_{pos} — {theme_desc}, {pos_ru}, два разных варианта")
 
     user = (
         f"Карта: «{card['name_ru']}». Суть: {card['essence']}\n"
         f"Прямое положение — ключевые темы: {keywords_up}\n"
         f"Перевёрнутое положение — ключевые темы: {keywords_rv}\n\n"
-        "Напиши предсказания для всех комбинаций темы и положения. "
-        f"На каждую комбинацию нужно ДВА разных варианта — они должны "
-        "отличаться по образности и акценту, но оставаться по сути той же карты:\n"
-        + "\n".join(key_lines) + "\n\n"
-        "Верни ответ строго в JSON, без markdown:\n"
+        "Напиши предсказания на все темы и положения. Для каждой комбинации — "
+        "ДВА разных варианта (отличаются по образности, но одна суть карты):\n"
+        + "\n".join(keys) + "\n\n"
+        "Верни ответ в JSON, без markdown:\n"
         "{\n"
         '  "love_upright":    ["вариант 1", "вариант 2"],\n'
         '  "love_reversed":   ["вариант 1", "вариант 2"],\n'
@@ -120,15 +146,105 @@ def build_prompt(card):
     return system, user
 
 
-def call_groq(api_key, system, user):
+def validate_general(resp):
+    if not isinstance(resp, dict):
+        raise ValueError("ответ не объект")
+    for theme in THEMES:
+        for pos in POSITIONS:
+            key = f"{theme}_{pos}"
+            value = resp.get(key)
+            if not isinstance(value, list) or len(value) < 2:
+                raise ValueError(f"{key}: нужен список из 2 вариантов")
+            for j, txt in enumerate(value[:2]):
+                if not isinstance(txt, str) or len(txt.strip()) < 30:
+                    raise ValueError(f"{key}[{j}] слишком короткий")
+    return True
+
+
+# ============================================================
+# ЗАПРОС 2-5: персонализация под одну тему — 12 знаков × 2 положения
+# ============================================================
+
+def build_zodiac_prompt(card, theme_id):
+    keywords_up = ", ".join(card["keywords_upright"][:5])
+    keywords_rv = ", ".join(card["keywords_reversed"][:5])
+    theme_desc = THEMES[theme_id]
+
+    system = (
+        "Ты опытный таролог с глубоким знанием астрологии. Пишешь короткие "
+        "атмосферные предсказания, учитывающие характер каждого знака зодиака. "
+        "Стиль: благородный, мягкий, без оккультного штампа. Обращение на «вы». "
+        "Каждое предсказание — 2-3 предложения, около 200-280 знаков. "
+        "Тон должен ощущаться лично — учитывай характер знака, его слабости и "
+        "сильные стороны, типичные ситуации. Никаких приветствий, подписей, "
+        "упоминаний слов «карта», «таро», «зодиак», «гороскоп». "
+        "Без markdown, без эмодзи. Без вводных «в любви...» — сразу к делу."
+    )
+
+    zodiac_lines = []
+    for z_id, z_name, z_traits in ZODIAC:
+        zodiac_lines.append(f"- {z_id} ({z_name}) — {z_traits}")
+
+    keys_listing = []
+    for z_id, z_name, _ in ZODIAC:
+        for pos in POSITIONS:
+            pos_ru = "прямая" if pos == "upright" else "перевёрнутая"
+            keys_listing.append(f"  «{z_id}_{pos}» — {z_name}, {pos_ru}")
+
+    json_template_lines = []
+    for z_id, _, _ in ZODIAC:
+        for pos in POSITIONS:
+            json_template_lines.append(f'  "{z_id}_{pos}": "...",')
+    # Убираем последнюю запятую
+    json_template_lines[-1] = json_template_lines[-1].rstrip(",")
+
+    user = (
+        f"Карта: «{card['name_ru']}». Суть: {card['essence']}\n"
+        f"Прямое положение — ключевые темы: {keywords_up}\n"
+        f"Перевёрнутое положение — ключевые темы: {keywords_rv}\n\n"
+        f"Тема расклада: {theme_desc}\n\n"
+        "Знаки зодиака и их характеры:\n"
+        + "\n".join(zodiac_lines) + "\n\n"
+        "Напиши предсказание ОТДЕЛЬНО для каждого знака в каждом положении. "
+        "Текст должен ЯВНО отличаться по знакам — попадать в их характер, "
+        "типичные ситуации, слабые места. Не пиши обобщённо: думай как именно "
+        "эта карта в этом положении проявится для конкретного человека этого "
+        "знака в контексте темы.\n\n"
+        "Нужны такие ключи:\n"
+        + "\n".join(keys_listing) + "\n\n"
+        "Верни ответ в JSON, без markdown, без вводных:\n"
+        "{\n"
+        + "\n".join(json_template_lines) + "\n"
+        "}"
+    )
+    return system, user
+
+
+def validate_zodiac(resp):
+    if not isinstance(resp, dict):
+        raise ValueError("ответ не объект")
+    for z_id in ZODIAC_IDS:
+        for pos in POSITIONS:
+            key = f"{z_id}_{pos}"
+            value = resp.get(key)
+            if not isinstance(value, str) or len(value.strip()) < 30:
+                raise ValueError(f"{key} слишком короткий или пустой")
+    return True
+
+
+# ============================================================
+# Запросы к Groq
+# ============================================================
+
+def call_groq(api_key, system, user, max_tokens=4500):
     payload = {
         "model": GROQ_MODEL,
         "messages": [
             {"role": "system", "content": system},
             {"role": "user", "content": user},
         ],
-        "temperature": 0.9,
-        "max_tokens": 4500,
+        "temperature": 0.85,
+        "max_tokens": max_tokens,
         "response_format": {"type": "json_object"},
     }
     headers = {
@@ -136,7 +252,6 @@ def call_groq(api_key, system, user):
         "Content-Type": "application/json",
         "User-Agent": USER_AGENT,
     }
-
     last_err = None
     for attempt in range(1, MAX_RETRIES + 1):
         try:
@@ -144,90 +259,129 @@ def call_groq(api_key, system, user):
                               timeout=GROQ_TIMEOUT)
             if r.status_code != 200:
                 last_err = f"Groq {r.status_code}: {r.text[:200]}"
-                print(f"  попытка {attempt}: {last_err}", file=sys.stderr)
+                print(f"    попытка {attempt}: {last_err}", file=sys.stderr)
                 continue
             content = r.json()["choices"][0]["message"]["content"].strip()
             return json.loads(content)
         except (requests.RequestException, KeyError, json.JSONDecodeError) as e:
             last_err = f"{type(e).__name__}: {e}"
-            print(f"  попытка {attempt}: {last_err}", file=sys.stderr)
-
+            print(f"    попытка {attempt}: {last_err}", file=sys.stderr)
     raise RuntimeError(f"Groq не ответил после {MAX_RETRIES} попыток: {last_err}")
 
 
-def validate(resp):
-    """Проверяет что в ответе все 8 ключей по 2 варианта длиной 30+ символов."""
-    if not isinstance(resp, dict):
-        raise ValueError("ответ не объект")
+# ============================================================
+# Сборка ячеек банка
+# ============================================================
+
+def build_card_predictions(api_key, card):
+    """Возвращает структуру предсказаний для одной карты."""
+    result = {
+        theme: {pos: {} for pos in POSITIONS}
+        for theme in THEMES
+    }
+
+    # 1) general — общие варианты
+    print(f"  [1/5] general...", file=sys.stderr)
+    system, user = build_general_prompt(card)
+    raw_general = call_groq(api_key, system, user, max_tokens=4500)
+    validate_general(raw_general)
     for theme in THEMES:
         for pos in POSITIONS:
             key = f"{theme}_{pos}"
-            if key not in resp:
-                raise ValueError(f"нет поля {key}")
-            value = resp[key]
-            if not isinstance(value, list) or len(value) < VARIANTS_PER_CELL:
-                raise ValueError(f"{key}: нужен список из {VARIANTS_PER_CELL} вариантов")
-            for j, txt in enumerate(value[:VARIANTS_PER_CELL]):
-                if not isinstance(txt, str) or len(txt.strip()) < 30:
-                    raise ValueError(f"{key}[{j}] слишком короткий")
-    return True
+            result[theme][pos]["general"] = [v.strip() for v in raw_general[key][:2]]
+    time.sleep(PAUSE_BETWEEN_REQUESTS)
+
+    # 2-5) для каждой темы — 12 знаков × 2 положения
+    for i, theme_id in enumerate(THEMES, start=2):
+        print(f"  [{i}/5] {theme_id} × 12 знаков...", file=sys.stderr)
+        system, user = build_zodiac_prompt(card, theme_id)
+        raw_zodiac = call_groq(api_key, system, user, max_tokens=6000)
+        validate_zodiac(raw_zodiac)
+        for z_id in ZODIAC_IDS:
+            for pos in POSITIONS:
+                key = f"{z_id}_{pos}"
+                result[theme_id][pos][z_id] = [raw_zodiac[key].strip()]
+        time.sleep(PAUSE_BETWEEN_REQUESTS)
+
+    return result
 
 
-def reshape_response(resp):
-    """Превращает плоские ключи в вложенную структуру."""
-    out = {}
-    for theme in THEMES:
-        out[theme] = {}
-        for pos in POSITIONS:
-            key = f"{theme}_{pos}"
-            variants = [v.strip() for v in resp[key][:VARIANTS_PER_CELL]]
-            out[theme][pos] = variants
-    return out
-
+# ============================================================
+# Основной цикл
+# ============================================================
 
 def main():
     api_key = env("GROQ_API_KEY")
     cards = load_cards()
+    bank = load_bank()
     total = len(cards)
-    print(f"Загружено карт: {total}", file=sys.stderr)
-    print(f"Каждая карта = 8 ячеек × 2 варианта = 16 текстов", file=sys.stderr)
-    print(f"Итого банк: {total * 16} текстов\n", file=sys.stderr)
+
+    print(f"Карт всего: {total}", file=sys.stderr)
+    print(f"Запросов к Groq на карту: 5", file=sys.stderr)
+    print(f"Итого запросов: {total * 5}", file=sys.stderr)
+    print(f"Текстов в банке после прогона: {total * 4 * 2 * (12 + 2)} ≈ "
+          f"{total * 4 * 2 * 14}\n", file=sys.stderr)
 
     success = 0
     failed = []
+    skipped = 0
     start = time.time()
 
     for i, card in enumerate(cards, start=1):
-        print(f"[{i}/{total}] {card['name_ru']}...", file=sys.stderr)
-        system, user = build_prompt(card)
+        card_id = card["id"]
+        print(f"[{i}/{total}] {card['name_ru']} ({card_id})", file=sys.stderr)
+
+        # Skip если для этой карты уже есть достаточно полный банк
+        # (полезно при повторном запуске после падения)
+        existing = bank.get(card_id)
+        if existing and is_card_complete(existing):
+            print(f"  ↷ уже есть в банке — пропускаю", file=sys.stderr)
+            skipped += 1
+            continue
+
         try:
-            raw = call_groq(api_key, system, user)
-            validate(raw)
-            card["themed_predictions"] = reshape_response(raw)
+            bank[card_id] = build_card_predictions(api_key, card)
             success += 1
             print(f"  ✓", file=sys.stderr)
         except Exception as e:
             print(f"  ERROR: {e}", file=sys.stderr)
-            failed.append(card["id"])
+            failed.append(card_id)
 
-        # Сохраняем cards.json после каждой карты — на случай если упадём
-        # посередине, не потеряем уже обработанные
-        if i % 10 == 0:
-            save_cards(cards)
-            print(f"  (промежуточное сохранение, {i}/{total})", file=sys.stderr)
+        # Промежуточные сохранения каждые 5 карт
+        if i % 5 == 0:
+            save_bank(bank)
+            elapsed = time.time() - start
+            print(f"  (сохранено, прошло {elapsed:.0f} сек)", file=sys.stderr)
 
-        time.sleep(PAUSE_BETWEEN_CARDS)
-
-    save_cards(cards)
-
+    save_bank(bank)
     elapsed = time.time() - start
-    print(f"\n✓ Успешно: {success}/{total} карт", file=sys.stderr)
-    print(f"  Время: {elapsed:.0f} сек", file=sys.stderr)
+    print(f"\n✓ Успешно: {success}/{total}", file=sys.stderr)
+    print(f"  Пропущено (уже было): {skipped}", file=sys.stderr)
+    print(f"  Время: {elapsed:.0f} сек ({elapsed/60:.1f} мин)", file=sys.stderr)
     if failed:
-        print(f"✗ Не удалось: {len(failed)} карт — {failed}", file=sys.stderr)
-        # Не выходим с ошибкой если хоть что-то получилось
-        if success == 0:
+        print(f"✗ Не удалось: {len(failed)} — {failed}", file=sys.stderr)
+        if success == 0 and skipped == 0:
             sys.exit(1)
+
+
+def is_card_complete(card_bank):
+    """Проверяет что у карты заполнены все ячейки (все темы × положения × general + 12 знаков)."""
+    if not isinstance(card_bank, dict):
+        return False
+    for theme in THEMES:
+        if theme not in card_bank:
+            return False
+        for pos in POSITIONS:
+            if pos not in card_bank[theme]:
+                return False
+            cell = card_bank[theme][pos]
+            # Должны быть general и все 12 знаков
+            if "general" not in cell or not cell["general"]:
+                return False
+            for z_id in ZODIAC_IDS:
+                if z_id not in cell or not cell[z_id]:
+                    return False
+    return True
 
 
 if __name__ == "__main__":
