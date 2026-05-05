@@ -165,9 +165,19 @@ def build_caption(card, fact):
 
 
 def build_keyboard(webapp_url):
+    """Кнопка для поста — открывает WebApp в режиме меню тем (daily).
+
+    Telegram распознаёт ссылки t.me/<bot>/<app>?startapp=<param> и открывает
+    WebApp с этим стартовым параметром. WebApp читает start_param и
+    переключается в нужный режим.
+    """
+    # Добавляем ?startapp=daily к URL, корректно обрабатывая случай
+    # когда URL уже содержит query-string
+    separator = "&" if "?" in webapp_url else "?"
+    daily_url = f"{webapp_url}{separator}startapp=daily"
     return {
         "inline_keyboard": [
-            [{"text": "🔮 Получить расклад", "url": webapp_url}]
+            [{"text": "🔮 Получить расклад", "url": daily_url}]
         ]
     }
 
