@@ -143,13 +143,31 @@ def html_escape(text):
     return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
+# Соответствие масти карт игральным мастям
+SUIT_EMOJI = {
+    "wands":     "♣️",  # жезлы — огонь, действие
+    "cups":      "♥️",  # кубки — вода, чувства
+    "swords":    "♠️",  # мечи — воздух, мысль
+    "pentacles": "♦️",  # пентакли — земля, материя
+}
+RANDOM_SUITS = ["♣️", "♥️", "♠️", "♦️"]
+
+
+def pick_emoji(card):
+    """Возвращает эмодзи масти. Для старших арканов — случайный из 4."""
+    suit = card.get("suit")
+    if suit and suit in SUIT_EMOJI:
+        return SUIT_EMOJI[suit]
+    return random.choice(RANDOM_SUITS)
+
+
 def build_caption(card, fact):
     name = html_escape(card["name_ru"])
     fact_safe = html_escape(fact)
+    emoji = pick_emoji(card)
 
     caption = (
-        f"🌙 <b>Карта дня</b>\n\n"
-        f"<b>{name}</b>\n\n"
+        f"{emoji} <b>Карта дня: {name}</b>\n\n"
         f"<i>{fact_safe}</i>"
     )
     if len(caption) > MAX_CAPTION:
@@ -157,8 +175,7 @@ def build_caption(card, fact):
         cut = max(0, len(fact_safe) - overflow)
         fact_safe = fact_safe[:cut].rstrip() + "…"
         caption = (
-            f"🌙 <b>Карта дня</b>\n\n"
-            f"<b>{name}</b>\n\n"
+            f"{emoji} <b>Карта дня: {name}</b>\n\n"
             f"<i>{fact_safe}</i>"
         )
     return caption
