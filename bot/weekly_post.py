@@ -223,7 +223,7 @@ def main():
 
     send_photo(token, chat_id, photo, caption, keyboard)
     print(f"Опубликовано в {chat_id}: {predictions['week_id']}")
-    print(f"Карты: {[c['card_name_ru'] for c in predictions['cards']]}")
+    print(f"Карты: {[c['card_id'] for c in predictions['cards']]}")
 
 
 if __name__ == "__main__":
