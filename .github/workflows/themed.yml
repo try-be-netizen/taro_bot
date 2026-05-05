@@ -17,7 +17,7 @@ concurrency:
 jobs:
   generate:
     runs-on: ubuntu-latest
-    timeout-minutes: 30  # 78 карт × ~1 сек = ~5 мин, с запасом
+    timeout-minutes: 60  # ~16 мин нормальный прогон + запас на rate limits
 
     steps:
       - name: Checkout
@@ -42,10 +42,10 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if git diff --quiet webapp/cards.json; then
-            echo "cards.json не изменился — коммит не нужен"
+          if git diff --quiet webapp/predictions_bank.json; then
+            echo "predictions_bank.json не изменился — коммит не нужен"
           else
-            git add webapp/cards.json
+            git add webapp/predictions_bank.json
             git commit -m "chore: themed predictions bank $(date -u +'%Y-%m-%d')"
             git push
           fi
