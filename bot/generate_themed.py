@@ -45,8 +45,10 @@ GROQ_MODEL = "llama-3.3-70b-versatile"
 GROQ_TIMEOUT = 90
 USER_AGENT = "ThemedTarotBank/2.0"
 
-MAX_RETRIES = 3
-PAUSE_BETWEEN_REQUESTS = 0.4
+MAX_RETRIES = 5
+PAUSE_BETWEEN_REQUESTS = 2.5  # пауза между запросами — Groq бесплатный
+                              # имеет лимит токенов в минуту, дросселимся
+RATE_LIMIT_PAUSE = 60         # если получили 429, ждём минуту
 
 THEMES = {
     "love":   "любовь и отношения",
@@ -257,15 +259,35 @@ def call_groq(api_key, system, user, max_tokens=4500):
         try:
             r = requests.post(GROQ_URL, headers=headers, json=payload,
                               timeout=GROQ_TIMEOUT)
+            # Rate limit — ждём дольше и пробуем снова
+            if r.status_code == 429:
+                # Groq возвращает retry-after в секундах либо в заголовке,
+                # либо в теле ответа. Парсим что найдём.
+                retry_after = RATE_LIMIT_PAUSE
+                hdr = r.headers.get("retry-after")
+                if hdr:
+                    try:
+                        retry_after = max(int(float(hdr)), 5)
+                    except ValueError:
+                        pass
+                # Capped, чтобы не висеть слишком долго
+                retry_after = min(retry_after, 90)
+                print(f"    rate limit (429), жду {retry_after} сек "
+                      f"(попытка {attempt}/{MAX_RETRIES})...", file=sys.stderr)
+                time.sleep(retry_after)
+                last_err = "rate limit"
+                continue
             if r.status_code != 200:
                 last_err = f"Groq {r.status_code}: {r.text[:200]}"
                 print(f"    попытка {attempt}: {last_err}", file=sys.stderr)
+                time.sleep(2)
                 continue
             content = r.json()["choices"][0]["message"]["content"].strip()
             return json.loads(content)
         except (requests.RequestException, KeyError, json.JSONDecodeError) as e:
             last_err = f"{type(e).__name__}: {e}"
             print(f"    попытка {attempt}: {last_err}", file=sys.stderr)
+            time.sleep(2)
     raise RuntimeError(f"Groq не ответил после {MAX_RETRIES} попыток: {last_err}")
 
 
@@ -295,7 +317,7 @@ def build_card_predictions(api_key, card):
     for i, theme_id in enumerate(THEMES, start=2):
         print(f"  [{i}/5] {theme_id} × 12 знаков...", file=sys.stderr)
         system, user = build_zodiac_prompt(card, theme_id)
-        raw_zodiac = call_groq(api_key, system, user, max_tokens=6000)
+        raw_zodiac = call_groq(api_key, system, user, max_tokens=4500)
         validate_zodiac(raw_zodiac)
         for z_id in ZODIAC_IDS:
             for pos in POSITIONS:
