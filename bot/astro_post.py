@@ -27,7 +27,8 @@ ROOT = Path(__file__).parent.parent
 
 TG_API = "https://api.telegram.org/bot{token}/{method}"
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
-GROQ_MODEL = "llama-3.3-70b-versatile"
+GROQ_MODEL = "llama-3.1-8b-instant"  # отдельный TPD лимит от 70b
+                                     # для коротких гороскопов качества хватает
 USER_AGENT = "AstroBot/2.0"
 GROQ_TIMEOUT = 60
 MAX_RETRIES = 3
