@@ -410,6 +410,130 @@ body::before {
 
 .reveal__text p { margin-bottom: 14px; }
 
+/* === ОНБОРДИНГ / ПРОФИЛЬ — выбор знака === */
+/* Внутри онбординга интро компактнее, чтобы все тайлы и кнопка пропуска
+   помещались на одном экране без скролла */
+.screen-onboard .intro { margin-bottom: 16px; margin-top: 4px; }
+.screen-onboard .intro__title { font-size: 24px; margin-bottom: 10px; }
+.screen-onboard .intro__sub { font-size: 13px; }
+
+.zodiac-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin: 12px 0 8px;
+    width: 100%;
+    max-width: 360px;
+}
+
+.zodiac-tile {
+    aspect-ratio: 1 / 0.7;
+    border: 1px solid rgba(212, 160, 76, 0.3);
+    border-radius: 8px;
+    background: linear-gradient(135deg, rgba(45, 27, 105, 0.5), rgba(26, 10, 62, 0.6));
+    color: var(--ink);
+    font-family: 'Manrope', sans-serif;
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 4px;
+    text-align: center;
+}
+
+.zodiac-tile:active, .zodiac-tile:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, rgba(60, 40, 130, 0.7), rgba(40, 20, 80, 0.8));
+}
+
+.zodiac-tile.is-selected {
+    border-color: var(--gold-bright);
+    background: linear-gradient(135deg, rgba(80, 60, 150, 0.7), rgba(60, 40, 110, 0.8));
+    box-shadow: 0 0 16px rgba(212, 160, 76, 0.4);
+}
+
+.zodiac-tile__symbol {
+    font-size: 24px;
+    color: var(--gold-bright);
+}
+
+.zodiac-tile__name {
+    font-size: 11px;
+    color: var(--ink-dim);
+}
+
+.zodiac-tile.is-selected .zodiac-tile__name {
+    color: var(--gold-bright);
+}
+
+.skip-link {
+    margin-top: 16px;
+    background: none;
+    border: none;
+    color: var(--ink-dim);
+    font-family: 'Manrope', sans-serif;
+    font-size: 13px;
+    font-style: italic;
+    cursor: pointer;
+    padding: 8px 16px;
+    text-decoration: underline;
+    text-decoration-color: rgba(160, 148, 120, 0.3);
+    text-underline-offset: 4px;
+}
+
+.skip-link:active { color: var(--gold); }
+
+/* Шапка с кнопкой профиля */
+.app-header {
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 4px;
+    padding: 0 4px;
+}
+
+.profile-btn {
+    background: rgba(45, 27, 105, 0.5);
+    border: 1px solid rgba(212, 160, 76, 0.25);
+    border-radius: 999px;
+    color: var(--ink-dim);
+    font-family: 'Manrope', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(4px);
+}
+
+.profile-btn:hover, .profile-btn:active {
+    border-color: var(--gold);
+    color: var(--gold-bright);
+}
+
+.profile-btn__sign {
+    font-size: 15px;
+    line-height: 1;
+}
+
+.profile-btn__gear {
+    font-size: 14px;
+    line-height: 1;
+    color: var(--gold-soft);
+    opacity: 0.8;
+}
+
+.profile-btn:hover .profile-btn__gear,
+.profile-btn:active .profile-btn__gear { color: var(--gold-bright); opacity: 1; }
+
 .reveal__back {
     margin-top: 32px;
     padding: 12px 20px;
@@ -479,6 +603,37 @@ body::before {
 <body>
 
 <div class="app">
+
+    <!-- Шапка с кнопкой профиля (показываем когда знак уже выбран) -->
+    <div class="app-header" id="appHeader" style="display: none;">
+        <button class="profile-btn" id="profileBtn" aria-label="Настройки">
+            <span id="profileSign" class="profile-btn__sign"></span>
+            <span class="profile-btn__gear">⚙</span>
+        </button>
+    </div>
+
+    <!-- ОНБОРДИНГ: выбор знака зодиака -->
+    <section class="screen-onboard" id="screenOnboard" style="display: none;">
+        <div class="intro">
+            <div class="intro__eyebrow">✦ Знакомство ✦</div>
+            <h1 class="intro__title">Под какой <em>звездой</em><br>вы родились?</h1>
+            <p class="intro__sub">Карты будут говорить с вами лично. Выберите свой знак — или доверьтесь судьбе.</p>
+        </div>
+        <div class="zodiac-grid" id="zodiacGrid"></div>
+        <button class="skip-link" id="skipOnboard">Пропустить — доверюсь судьбе</button>
+    </section>
+
+    <!-- ПРОФИЛЬ: смена знака -->
+    <section class="screen-onboard" id="screenProfile" style="display: none;">
+        <div class="intro">
+            <div class="intro__eyebrow">✦ Ваш профиль ✦</div>
+            <h1 class="intro__title">Ваш <em>знак</em></h1>
+            <p class="intro__sub">Тапните по знаку, чтобы выбрать его.</p>
+        </div>
+        <div class="zodiac-grid" id="profileGrid"></div>
+        <button class="skip-link" id="skipProfile">← Назад</button>
+    </section>
+
     <!-- РЕЖИМ WEEKLY: 3 карты (старый расклад) -->
     <section class="screen-pick" id="screenPick" style="display: none;">
         <div class="intro">
@@ -600,6 +755,131 @@ const LOADER_TEXTS = {
     custom: 'Вслушиваюсь в ваш вопрос...',
 };
 
+// === Знаки зодиака ===
+const ZODIAC = [
+    {id: 'aries',       symbol: '♈', name: 'Овен'},
+    {id: 'taurus',      symbol: '♉', name: 'Телец'},
+    {id: 'gemini',      symbol: '♊', name: 'Близнецы'},
+    {id: 'cancer',      symbol: '♋', name: 'Рак'},
+    {id: 'leo',         symbol: '♌', name: 'Лев'},
+    {id: 'virgo',       symbol: '♍', name: 'Дева'},
+    {id: 'libra',       symbol: '♎', name: 'Весы'},
+    {id: 'scorpio',     symbol: '♏', name: 'Скорпион'},
+    {id: 'sagittarius', symbol: '♐', name: 'Стрелец'},
+    {id: 'capricorn',   symbol: '♑', name: 'Козерог'},
+    {id: 'aquarius',    symbol: '♒', name: 'Водолей'},
+    {id: 'pisces',      symbol: '♓', name: 'Рыбы'},
+];
+
+let userZodiac = null;          // 'aries' | 'taurus' | ... | null (если пропустил)
+let predictionsBank = null;     // банк themed-предсказаний
+
+// === CloudStorage обёртки ===
+// Telegram CloudStorage привязан к юзеру и переживает смену устройства.
+// Если по какой-то причине недоступен (старый Telegram, отладка в браузере) —
+// падаем на localStorage.
+function loadZodiac() {
+    return new Promise((resolve) => {
+        if (tg?.CloudStorage) {
+            tg.CloudStorage.getItem('zodiac', (err, value) => {
+                if (err || !value) {
+                    // Фоллбек на localStorage
+                    resolve(localStorage.getItem('zodiac') || null);
+                } else {
+                    resolve(value);
+                }
+            });
+        } else {
+            resolve(localStorage.getItem('zodiac') || null);
+        }
+    });
+}
+
+function saveZodiac(zodiacId) {
+    // Дублируем в localStorage для отладки и быстрого чтения
+    try { localStorage.setItem('zodiac', zodiacId); } catch (e) {}
+    if (tg?.CloudStorage) {
+        tg.CloudStorage.setItem('zodiac', zodiacId, () => {});
+    }
+}
+
+function clearZodiac() {
+    try { localStorage.removeItem('zodiac'); } catch (e) {}
+    if (tg?.CloudStorage) {
+        tg.CloudStorage.removeItem('zodiac', () => {});
+    }
+}
+
+function findZodiac(id) {
+    return ZODIAC.find(z => z.id === id);
+}
+
+// === Онбординг и профиль ===
+function renderZodiacGrid(containerId, currentSelection, onPick) {
+    const grid = document.getElementById(containerId);
+    grid.innerHTML = '';
+    ZODIAC.forEach(z => {
+        const tile = document.createElement('button');
+        tile.className = 'zodiac-tile';
+        if (z.id === currentSelection) tile.classList.add('is-selected');
+        tile.innerHTML = `
+            <span class="zodiac-tile__symbol">${z.symbol}</span>
+            <span class="zodiac-tile__name">${z.name}</span>
+        `;
+        tile.addEventListener('click', () => onPick(z.id));
+        grid.appendChild(tile);
+    });
+}
+
+function showOnboarding() {
+    document.getElementById('screenOnboard').style.display = 'block';
+    renderZodiacGrid('zodiacGrid', null, (zodiacId) => {
+        if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+        userZodiac = zodiacId;
+        saveZodiac(zodiacId);
+        document.getElementById('screenOnboard').style.display = 'none';
+        showHeader();
+        renderDaily();
+    });
+    document.getElementById('skipOnboard').addEventListener('click', () => {
+        userZodiac = null;
+        document.getElementById('screenOnboard').style.display = 'none';
+        showHeader();
+        renderDaily();
+    }, { once: true });
+}
+
+function showProfile() {
+    document.getElementById('screenThemes').style.display = 'none';
+    document.getElementById('screenProfile').style.display = 'block';
+    renderZodiacGrid('profileGrid', userZodiac, (zodiacId) => {
+        if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+        userZodiac = zodiacId;
+        saveZodiac(zodiacId);
+        document.getElementById('screenProfile').style.display = 'none';
+        showHeader();
+        renderDaily();
+    });
+    document.getElementById('skipProfile').addEventListener('click', () => {
+        document.getElementById('screenProfile').style.display = 'none';
+        renderDaily();
+    }, { once: true });
+}
+
+function showHeader() {
+    const header = document.getElementById('appHeader');
+    const sign = document.getElementById('profileSign');
+    if (userZodiac) {
+        const z = findZodiac(userZodiac);
+        sign.textContent = z.symbol;
+    } else {
+        sign.textContent = '☆';
+    }
+    header.style.display = 'flex';
+    const btn = document.getElementById('profileBtn');
+    btn.onclick = showProfile;
+}
+
 async function loadData() {
     try {
         const cardsRes = await fetch('cards.json?t=' + Date.now());
@@ -607,13 +887,33 @@ async function loadData() {
         allCards = await cardsRes.json();
         cardsData = Object.fromEntries(allCards.map(c => [c.id, c]));
 
+        // Загружаем банк предсказаний (только если он понадобится — в daily-режиме)
+        if (mode === 'daily') {
+            try {
+                const bankRes = await fetch('predictions_bank.json?t=' + Date.now());
+                if (bankRes.ok) {
+                    predictionsBank = await bankRes.json();
+                }
+            } catch (e) {
+                console.warn('Банк не загрузился, будем использовать фоллбек');
+            }
+        }
+
         if (mode === 'weekly') {
             const predRes = await fetch('predictions.json?t=' + Date.now());
             if (!predRes.ok) throw new Error('predictions.json не загрузился');
             predictions = await predRes.json();
             renderWeekly();
         } else {
-            renderDaily();
+            // daily — проверяем сохранённый знак
+            const savedSign = await loadZodiac();
+            if (savedSign) {
+                userZodiac = savedSign;
+                showHeader();
+                renderDaily();
+            } else {
+                showOnboarding();
+            }
         }
     } catch (e) {
         console.error('Load error:', e);
@@ -715,25 +1015,39 @@ async function pickDailyCard(theme) {
     const position = isReversed ? 'reversed' : 'upright';
 
     // Берём предсказание из банка
-    let prediction = '';
-    if (card.themed_predictions
-        && card.themed_predictions[theme]
-        && card.themed_predictions[theme][position]) {
-        const variants = card.themed_predictions[theme][position];
-        prediction = Array.isArray(variants)
-            ? variants[Math.floor(Math.random() * variants.length)]
-            : variants;
-    }
+    // Приоритет: вариант для знака → вариант general → фоллбек
+    let prediction = pickPrediction(card.id, theme, position, userZodiac);
 
     if (!prediction) {
-        // Фоллбек если для этой карты ещё не сгенерили банк
+        // Фоллбек если банк ещё не сгенерён
         prediction = isReversed
-            ? `Карта «${card.name_ru}» в перевёрнутом положении говорит о смещённой энергии — вглядитесь, что просит вашего внимания.`
-            : `Карта «${card.name_ru}» — это ${card.essence}`;
+            ? `«${card.name_ru}» в перевёрнутом положении говорит о смещённой энергии — вглядитесь, что просит вашего внимания.`
+            : `«${card.name_ru}» — ${card.essence}`;
     }
 
     hideLoader();
     revealCard(card, isReversed, prediction, theme);
+}
+
+/**
+ * Выбирает текст предсказания для карты в нужной теме и положении.
+ * Приоритет: знак юзера → general → null (значит фоллбек снаружи).
+ */
+function pickPrediction(cardId, theme, position, zodiacId) {
+    if (!predictionsBank || !predictionsBank[cardId]) return null;
+    const cell = predictionsBank[cardId]?.[theme]?.[position];
+    if (!cell) return null;
+
+    // Сначала пробуем взять текст для знака юзера
+    if (zodiacId && Array.isArray(cell[zodiacId]) && cell[zodiacId].length > 0) {
+        const variants = cell[zodiacId];
+        return variants[Math.floor(Math.random() * variants.length)];
+    }
+    // Иначе — general (общий вариант)
+    if (Array.isArray(cell.general) && cell.general.length > 0) {
+        return cell.general[Math.floor(Math.random() * cell.general.length)];
+    }
+    return null;
 }
 
 // === ОБЩИЙ ЭКРАН РАСКРЫТИЯ ===
