@@ -22,6 +22,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # Глубина 0 нужна чтобы git push мог выполняться корректно изнутри
+          # скрипта (он коммитит каждые 5 карт чтобы не терять прогресс при
+          # таймауте 60 минут).
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -36,16 +41,8 @@ jobs:
       - name: Generate themed bank
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        # Скрипт сам коммитит и пушит каждые 5 карт.
+        # Это гарантирует что прогресс попадёт в репо даже если workflow
+        # будет убит по таймауту 60 минут — что часто случается из-за
+        # rate limits Groq на бесплатном тарифе.
         run: python bot/generate_themed.py
-
-      - name: Commit updated bank
-        run: |
-          git config user.name  "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if git diff --quiet webapp/predictions_bank.json; then
-            echo "predictions_bank.json не изменился — коммит не нужен"
-          else
-            git add webapp/predictions_bank.json
-            git commit -m "chore: themed predictions bank $(date -u +'%Y-%m-%d')"
-            git push
-          fi
