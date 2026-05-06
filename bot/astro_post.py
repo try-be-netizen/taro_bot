@@ -1,25 +1,22 @@
 """
-Астро-пост: юмористическое наблюдение про знак зодиака.
+Гороскоп дня: один пост со всеми 12 знаками.
 
 Что делает:
-1. Случайно выбирает знак из 12, исключая последние 12 опубликованных
-   (чтобы цикл был ровный — каждый знак минимум раз в 12 постов).
-2. Через Groq генерирует короткое бытовое наблюдение в духе твиттер-скетча.
-3. Постит текстом + кнопка «🔮 Получить расклад», ведущая в WebApp
-   в режим меню тем (?startapp=daily).
+1. Один запрос к Groq, который генерирует 12 предсказаний — по одному на знак.
+2. Каждый знак: 1-2 коротких предложения (~80-150 знаков), мягко и тепло,
+   без оккультного штампа.
+3. Постит в канал общим списком + кнопка «🔮 Получить расклад».
 
 ENV:
     TELEGRAM_BOT_TOKEN
     TELEGRAM_CHAT_ID
     GROQ_API_KEY
-    WEBAPP_URL — direct link на Mini App, например
-                 https://t.me/please_taro_bot/please_taro
+    WEBAPP_URL
 """
 from __future__ import annotations
 
 import json
 import os
-import random
 import sys
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -27,42 +24,43 @@ from pathlib import Path
 import requests
 
 ROOT = Path(__file__).parent.parent
-HISTORY_PATH = ROOT / "bot" / "astro_history.json"
 
 TG_API = "https://api.telegram.org/bot{token}/{method}"
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 GROQ_MODEL = "llama-3.3-70b-versatile"
-USER_AGENT = "AstroBot/1.0"
+USER_AGENT = "AstroBot/2.0"
 GROQ_TIMEOUT = 60
 MAX_RETRIES = 3
 
-HISTORY_KEEP = 12  # 12 знаков — не повторяем последние 12 публикаций
+# Лимит сообщения в Telegram — 4096 знаков. У нас 12 блоков по ~120 знаков
+# плюс заголовок и эмодзи — итого ~1800-2000 знаков. С запасом.
+MAX_MESSAGE = 4096
 
 ZODIAC = [
     {"id": "aries",       "ru": "Овен",       "emoji": "♈",
-     "traits": "импульсивный, прямолинейный, нетерпеливый, лидер, конкурентный"},
+     "traits": "импульсивный, прямолинейный, лидер, любит вызовы и конкуренцию"},
     {"id": "taurus",      "ru": "Телец",      "emoji": "♉",
-     "traits": "упрямый, обстоятельный, любит уют и еду, медленный на подъём, гедонист"},
+     "traits": "обстоятельный, чувственный, любит уют и стабильность, упрямый"},
     {"id": "gemini",      "ru": "Близнецы",   "emoji": "♊",
-     "traits": "болтливый, любопытный, скачет с темы на тему, не доделывает, обожает сплетни"},
+     "traits": "любопытный, общительный, подвижный, скачет с темы на тему"},
     {"id": "cancer",      "ru": "Рак",        "emoji": "♋",
-     "traits": "эмоциональный, обидчивый, любит дом и семью, прячется в раковину, переживает за всех"},
+     "traits": "эмоциональный, заботливый, домашний, чувствительный"},
     {"id": "leo",         "ru": "Лев",        "emoji": "♌",
-     "traits": "пафосный, любит внимание, драматичный, щедрый напоказ, обожает себя"},
+     "traits": "яркий, гордый, щедрый, любит внимание и драматичные жесты"},
     {"id": "virgo",       "ru": "Дева",       "emoji": "♍",
-     "traits": "перфекционист, критикует, замечает все детали, чистоплотный до невроза, тревожный"},
+     "traits": "перфекционист, аналитик, замечает детали, тревожный"},
     {"id": "libra",       "ru": "Весы",       "emoji": "♎",
-     "traits": "нерешительный, ищет гармонию, эстет, не выносит конфликтов, выбирает 40 минут"},
+     "traits": "ищет гармонию, эстет, нерешительный, дипломат"},
     {"id": "scorpio",     "ru": "Скорпион",   "emoji": "♏",
-     "traits": "интенсивный, мстительный, помнит всё, проницательный, не отпускает обиды"},
+     "traits": "интенсивный, проницательный, страстный, помнит всё"},
     {"id": "sagittarius", "ru": "Стрелец",    "emoji": "♐",
-     "traits": "оптимист, любит путешествия и свободу, болтает правду в лицо, не выносит рутины"},
+     "traits": "оптимист, любит свободу и горизонты, болтает правду в лицо"},
     {"id": "capricorn",   "ru": "Козерог",    "emoji": "♑",
-     "traits": "трудоголик, серьёзный, держит лицо, расчётливый, играет по правилам"},
+     "traits": "трудоголик, серьёзный, амбициозный, играет по правилам"},
     {"id": "aquarius",    "ru": "Водолей",    "emoji": "♒",
-     "traits": "эксцентричный, рассеянный, оригинальный, отстранённый, забывает базовые вещи"},
+     "traits": "оригинальный, отстранённый, идеалист, любит свободу"},
     {"id": "pisces",      "ru": "Рыбы",       "emoji": "♓",
-     "traits": "мечтательный, чувствительный, теряется в реальности, эмпат, плачет от рекламы"},
+     "traits": "мечтательный, чувствительный, эмпат, теряется в реальности"},
 ]
 
 
@@ -74,71 +72,70 @@ def env(name, required=True):
     return v
 
 
-def msk_now_iso():
-    return datetime.now(timezone(timedelta(hours=3))).isoformat(timespec="seconds")
+def msk_now():
+    return datetime.now(timezone(timedelta(hours=3)))
 
 
-def load_history():
-    if not HISTORY_PATH.exists():
-        return {"published_ids": [], "last_run": None}
-    try:
-        return json.loads(HISTORY_PATH.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError):
-        return {"published_ids": [], "last_run": None}
+# Месяцы для красивого заголовка («15 мая»)
+MONTHS_RU = [
+    "января", "февраля", "марта", "апреля", "мая", "июня",
+    "июля", "августа", "сентября", "октября", "ноября", "декабря"
+]
+WEEKDAYS_RU = [
+    "Понедельник", "Вторник", "Среда", "Четверг",
+    "Пятница", "Суббота", "Воскресенье"
+]
 
 
-def save_history(history):
-    history["published_ids"] = history.get("published_ids", [])[-HISTORY_KEEP:]
-    HISTORY_PATH.write_text(
-        json.dumps(history, ensure_ascii=False, indent=2),
-        encoding="utf-8",
-    )
+def format_date_ru(dt):
+    """«Среда, 15 мая»"""
+    return f"{WEEKDAYS_RU[dt.weekday()]}, {dt.day} {MONTHS_RU[dt.month - 1]}"
 
 
 def html_escape(text):
     return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
-def pick_sign(history):
-    """Случайный знак с исключением последних HISTORY_KEEP опубликованных."""
-    excluded = set(history.get("published_ids", []))
-    available = [s for s in ZODIAC if s["id"] not in excluded]
-    if not available:
-        # все 12 уже опубликованы недавно — значит цикл прошёл, начинаем заново
-        available = ZODIAC
-    return random.choice(available)
-
-
-def build_prompt(sign):
-    """Промпт под бытовой юмор-наблюдение."""
+def build_prompt():
+    """Один запрос — 12 текстов в JSON."""
     system = (
-        "Ты пишешь короткие юмористические наблюдения про знаки зодиака для "
-        "Telegram-канала. Стиль: твиттер-скетч / стенд-ап. Конкретные бытовые "
-        "ситуации (магазин, офис, метро, доставка, чаты, очередь, кафе, дом). "
-        "Никаких эзотерических штампов, никакого «вы рождены под звездой», "
-        "никаких приветствий. Не используешь слова «гороскоп», «астрология», "
-        "«зодиак». Прямо, наблюдательно, с тёплым юмором — НЕ обидно. "
-        "Никаких эмодзи в тексте. Без markdown. На русском. "
-        "Длина: 2-4 предложения, всего 200-350 знаков.\n\n"
-        "ВАЖНО про оформление списков и перечислений: если в тексте есть "
-        "пронумерованные пункты или перечисление шагов — каждый пункт с НОВОЙ "
-        "строки. Не клей пункты в одно предложение через запятую."
+        "Ты пишешь короткий ежедневный гороскоп для Telegram-канала. "
+        "Стиль: тёплый, мягкий, конкретный — без оккультных штампов и "
+        "пафоса. Никаких «звёзды шепчут», «вселенная посылает». Никаких "
+        "приветствий, подписей. Прямо, наблюдательно, с любовью к человеку. "
+        "Можешь дать совет, обратить внимание на что-то, предупредить о "
+        "ловушке. Без markdown, без эмодзи. На русском, обращение на «вы». "
+        "Каждое предсказание — 1-2 коротких предложения, 80-150 знаков. "
+        "Тексты ДОЛЖНЫ отличаться по знакам — учитывай характер, типичные "
+        "ситуации и слабые места каждого. Не пиши обобщённо."
     )
+
+    zodiac_lines = []
+    for z in ZODIAC:
+        zodiac_lines.append(f"- {z['id']} ({z['ru']}) — {z['traits']}")
+
     user = (
-        f"Знак: {sign['ru']}. Характерные черты: {sign['traits']}.\n\n"
-        "Напиши одно бытовое наблюдение в духе:\n\n"
-        "«Если коллега греет рыбу в микроволновке, Козерог про себя составляет "
-        "список:\n"
-        "1) написать в общий чат\n"
-        "2) пометить в HR-тикете\n"
-        "3) ничего не делать, потому что он взрослый человек.\n\n"
-        "В итоге пишет в чат в 17:58.»\n\n"
-        "Это должна быть конкретная сцена из обычной жизни — на работе, в магазине, "
-        "в чате, в транспорте, в кафе, дома. Точное попадание в характер знака. "
-        "Без морали, без «и в этом весь Козерог». Просто сценка, заканчивающаяся "
-        "на смешной детали.\n\n"
-        "Если есть нумерованный список — каждый пункт с НОВОЙ строки, как в примере выше. "
-        "Не упоминай знак внутри текста — он будет в заголовке. Не используй markdown."
+        "Сегодня день для лёгкого, конкретного гороскопа. Напиши предсказание "
+        "ОТДЕЛЬНО для каждого из 12 знаков. Текст должен попадать в "
+        "характер знака — что ему нужно сегодня, к чему быть внимательным, "
+        "что сделать или от чего воздержаться.\n\n"
+        "Знаки:\n"
+        + "\n".join(zodiac_lines) + "\n\n"
+        "Верни JSON, без markdown, без вводных:\n"
+        "{\n"
+        '  "aries": "...",\n'
+        '  "taurus": "...",\n'
+        '  "gemini": "...",\n'
+        '  "cancer": "...",\n'
+        '  "leo": "...",\n'
+        '  "virgo": "...",\n'
+        '  "libra": "...",\n'
+        '  "scorpio": "...",\n'
+        '  "sagittarius": "...",\n'
+        '  "capricorn": "...",\n'
+        '  "aquarius": "...",\n'
+        '  "pisces": "..."\n'
+        "}"
     )
     return system, user
 
@@ -150,8 +147,9 @@ def call_groq(api_key, system, user):
             {"role": "system", "content": system},
             {"role": "user", "content": user},
         ],
-        "temperature": 0.95,  # выше для разнообразия и юмора
-        "max_tokens": 350,
+        "temperature": 0.85,
+        "max_tokens": 2500,
+        "response_format": {"type": "json_object"},
     }
     headers = {
         "Authorization": f"Bearer {api_key}",
@@ -168,54 +166,46 @@ def call_groq(api_key, system, user):
                 last_err = f"Groq {r.status_code}: {r.text[:200]}"
                 print(f"  попытка {attempt}: {last_err}", file=sys.stderr)
                 continue
-            return r.json()["choices"][0]["message"]["content"].strip()
-        except (requests.RequestException, KeyError) as e:
+            content = r.json()["choices"][0]["message"]["content"].strip()
+            return json.loads(content)
+        except (requests.RequestException, KeyError, json.JSONDecodeError) as e:
             last_err = f"{type(e).__name__}: {e}"
             print(f"  попытка {attempt}: {last_err}", file=sys.stderr)
     raise RuntimeError(f"Groq не ответил после {MAX_RETRIES} попыток: {last_err}")
 
 
-def split_list_items(text):
-    """Если в тексте есть пронумерованный список вида «1) ... 2) ... 3) ...»
-    или «1. ... 2. ...», разбивает каждый пункт на свою строку.
-
-    Срабатывает только если в тексте >=2 пунктов подряд — иначе текст не трогаем.
-    """
-    import re
-
-    # Паттерн пункта: цифра + ) или . + пробел
-    pattern = re.compile(r"\s+(\d+[.)]\s)")
-
-    # Считаем сколько пунктов в тексте — должно быть хотя бы 2 чтобы это
-    # действительно был список, а не случайное «работает 24/7»
-    matches = pattern.findall(text)
-    if len(matches) < 2:
-        return text
-
-    # Перед каждым пунктом ставим перевод строки (но не дублируем если уже есть)
-    result = pattern.sub(r"\n\1", text)
-    # Убираем тройные переводы строк если случайно образовались
-    result = re.sub(r"\n{3,}", "\n\n", result)
-    return result.strip()
+def validate(resp):
+    """Проверяет что есть текст для каждого из 12 знаков."""
+    if not isinstance(resp, dict):
+        raise ValueError("ответ не объект")
+    for z in ZODIAC:
+        text = resp.get(z["id"])
+        if not isinstance(text, str) or len(text.strip()) < 30:
+            raise ValueError(f"для {z['id']} нет нормального текста")
+    return True
 
 
-def build_caption(sign, observation):
-    # Сначала разбиваем списки на строки, потом экранируем
-    formatted = split_list_items(observation)
-    obs = html_escape(formatted)
-    return (
-        f"{sign['emoji']} <b>{html_escape(sign['ru'])}</b>\n\n"
-        f"{obs}"
-    )
+def build_caption(predictions, today):
+    date_str = format_date_ru(today)
+    lines = [f"✦ <b>Гороскоп · {html_escape(date_str)}</b>", ""]
+
+    for z in ZODIAC:
+        text = html_escape(predictions[z["id"]].strip())
+        lines.append(f"{z['emoji']} <b>{html_escape(z['ru'])}</b>")
+        lines.append(text)
+        lines.append("")  # пустая строка между знаками
+
+    caption = "\n".join(lines).rstrip()
+
+    # На всякий случай страховка от лимита 4096
+    if len(caption) > MAX_MESSAGE:
+        # Если каким-то чудом перебор — обрезаем последние знаки до лимита
+        caption = caption[:MAX_MESSAGE - 50].rsplit("\n", 1)[0] + "\n\n…"
+    return caption
 
 
 def build_keyboard(webapp_url):
-    """Кнопка для поста — открывает WebApp в режиме меню тем (daily).
-
-    Telegram распознаёт ссылки t.me/<bot>/<app>?startapp=<param> и
-    открывает WebApp с этим параметром. WebApp читает start_param
-    и переключается в нужный режим.
-    """
+    """Кнопка для поста — открывает WebApp в режим меню тем."""
     separator = "&" if "?" in webapp_url else "?"
     daily_url = f"{webapp_url}{separator}startapp=daily"
     return {
@@ -249,26 +239,23 @@ def main():
     api_key = env("GROQ_API_KEY")
     webapp_url = env("WEBAPP_URL")
 
-    history = load_history()
-    sign = pick_sign(history)
-    print(f"Знак: {sign['ru']} ({sign['id']})", file=sys.stderr)
+    today = msk_now()
+    print(f"Гороскоп на {format_date_ru(today)}", file=sys.stderr)
 
-    system, user = build_prompt(sign)
+    system, user = build_prompt()
     try:
-        observation = call_groq(api_key, system, user)
+        raw = call_groq(api_key, system, user)
+        validate(raw)
     except Exception as e:
         print(f"ERROR: {e}", file=sys.stderr)
         sys.exit(1)
-    print(f"  Сгенерировано {len(observation)} символов", file=sys.stderr)
 
-    caption = build_caption(sign, observation)
+    caption = build_caption(raw, today)
+    print(f"  Длина поста: {len(caption)} знаков", file=sys.stderr)
+
     keyboard = build_keyboard(webapp_url)
     send_message(token, chat_id, caption, reply_markup=keyboard)
-
-    history.setdefault("published_ids", []).append(sign["id"])
-    history["last_run"] = msk_now_iso()
-    save_history(history)
-    print(f"✓ Опубликовано: {sign['ru']}", file=sys.stderr)
+    print(f"✓ Опубликован гороскоп дня", file=sys.stderr)
 
 
 if __name__ == "__main__":
