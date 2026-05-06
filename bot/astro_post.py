@@ -27,8 +27,12 @@ ROOT = Path(__file__).parent.parent
 
 TG_API = "https://api.telegram.org/bot{token}/{method}"
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
-GROQ_MODEL = "llama-3.1-8b-instant"  # отдельный TPD лимит от 70b
-                                     # для коротких гороскопов качества хватает
+
+# Основная модель — 70b, у неё лучшая образность. Если упрётся в дневной
+# лимит токенов (TPD), фоллбекнемся на 8b — её лимит отдельный.
+GROQ_MODEL_PRIMARY = "llama-3.3-70b-versatile"
+GROQ_MODEL_FALLBACK = "llama-3.1-8b-instant"
+
 USER_AGENT = "AstroBot/2.0"
 GROQ_TIMEOUT = 60
 MAX_RETRIES = 3
@@ -100,29 +104,59 @@ def html_escape(text):
 def build_prompt():
     """Один запрос — 12 текстов в JSON."""
     system = (
-        "Ты пишешь короткий ежедневный гороскоп для Telegram-канала. "
-        "Стиль: тёплый, мягкий, конкретный — без оккультных штампов и "
-        "пафоса. Никаких «звёзды шепчут», «вселенная посылает». Никаких "
-        "приветствий, подписей. Прямо, наблюдательно, с любовью к человеку. "
-        "Можешь дать совет, обратить внимание на что-то, предупредить о "
-        "ловушке. Без markdown, без эмодзи. На русском, обращение на «вы». "
-        "Каждое предсказание — 1-2 коротких предложения, 80-150 знаков. "
-        "Тексты ДОЛЖНЫ отличаться по знакам — учитывай характер, типичные "
-        "ситуации и слабые места каждого. Не пиши обобщённо."
+        "Ты пишешь короткие предсказания на день для Telegram-канала. "
+        "Стиль: атмосферный, образный, наблюдательный. С лёгкой улыбкой, "
+        "но без оккультных штампов и пафоса. Каждое предсказание = одна "
+        "конкретная сцена или образ из обычной жизни (дом, работа, чат, "
+        "магазин, разговор, прогулка). На русском, обращение на «вы». "
+        "Без markdown, без эмодзи. 80-150 знаков на знак.\n\n"
+        "СТРОГИЕ ЗАПРЕТЫ:\n"
+        "1. НЕ начинай текст с обращения к знаку («Овну сегодня…», "
+        "«Тельцу следует…»). Сразу к делу.\n"
+        "2. НЕ упоминай название знака внутри текста — оно уже в заголовке.\n"
+        "3. ЗАПРЕТНЫЕ фразы-штампы: «следует», «стоит», «не забывайте», "
+        "«помните», «уделите внимание», «важно понимать», «обратите "
+        "внимание на свою…».\n"
+        "4. НЕ пиши нравоучения — пиши предсказание. Не «будьте "
+        "внимательны», а «маленькая деталь утром изменит вечер».\n"
+        "5. НЕ пиши абстрактно («гармония», «баланс», «энергия»). "
+        "Только конкретные сцены, предметы, действия.\n\n"
+        "ЧТО ХОРОШО:\n"
+        "— Конкретный момент или сцена дня\n"
+        "— Лёгкая ирония или подмеченная деталь\n"
+        "— Предсказание-настроение, а не правило\n"
+        "— Каждый знак звучит ИНАЧЕ — структура предложений разная"
     )
 
     zodiac_lines = []
     for z in ZODIAC:
         zodiac_lines.append(f"- {z['id']} ({z['ru']}) — {z['traits']}")
 
+    examples = (
+        "Примеры правильного стиля (это ПРИМЕРЫ, не используй их дословно):\n"
+        "❌ «Овну сегодня следует уделить внимание импульсивности» — БАН\n"
+        "✅ «День сложится из быстрых решений. Самое верное — то, "
+        "которое пришло первым.»\n\n"
+        "❌ «Тельцу стоит сосредоточиться на потребностях» — БАН\n"
+        "✅ «Дом попросит небольшой перестановки. Стол к окну — и день "
+        "пойдёт иначе.»\n\n"
+        "❌ «Близнецам нужно уделять внимание беседам» — БАН\n"
+        "✅ «В разговоре после обеда мелькнёт случайная фраза, "
+        "которую захочется записать.»\n\n"
+        "❌ «Раку стоит начать день с домашних дел» — БАН\n"
+        "✅ «Утренний звонок принесёт новость, которая ждала своего "
+        "времени неделю.»"
+    )
+
     user = (
-        "Сегодня день для лёгкого, конкретного гороскопа. Напиши предсказание "
-        "ОТДЕЛЬНО для каждого из 12 знаков. Текст должен попадать в "
-        "характер знака — что ему нужно сегодня, к чему быть внимательным, "
-        "что сделать или от чего воздержаться.\n\n"
-        "Знаки:\n"
+        "Напиши предсказание на сегодня для каждого из 12 знаков. "
+        "Каждое — конкретная сцена / предмет / момент дня, попадающий в "
+        "характер знака.\n\n"
+        f"{examples}\n\n"
+        "Знаки и их характеры (для попадания в тон):\n"
         + "\n".join(zodiac_lines) + "\n\n"
-        "Верни JSON, без markdown, без вводных:\n"
+        "12 текстов, каждый ≤150 знаков, разной структуры. "
+        "Верни JSON без markdown:\n"
         "{\n"
         '  "aries": "...",\n'
         '  "taurus": "...",\n'
@@ -141,14 +175,19 @@ def build_prompt():
     return system, user
 
 
-def call_groq(api_key, system, user):
+def call_groq(api_key, system, user, model):
+    """Вызывает Groq с указанной моделью.
+
+    Возвращает либо распарсенный JSON ответа, либо None если упёрлись
+    в дневной лимит (429). При других ошибках поднимает RuntimeError.
+    """
     payload = {
-        "model": GROQ_MODEL,
+        "model": model,
         "messages": [
             {"role": "system", "content": system},
             {"role": "user", "content": user},
         ],
-        "temperature": 0.85,
+        "temperature": 0.95,
         "max_tokens": 2500,
         "response_format": {"type": "json_object"},
     }
@@ -163,16 +202,40 @@ def call_groq(api_key, system, user):
         try:
             r = requests.post(GROQ_URL, headers=headers, json=payload,
                               timeout=GROQ_TIMEOUT)
+            if r.status_code == 429:
+                # Дневной лимит токенов на эту модель — не пытаемся retry
+                last_err = f"Groq 429 (rate limit / TPD): {r.text[:300]}"
+                print(f"  {model}: упёрлись в лимит токенов",
+                      file=sys.stderr)
+                return None
             if r.status_code != 200:
                 last_err = f"Groq {r.status_code}: {r.text[:200]}"
-                print(f"  попытка {attempt}: {last_err}", file=sys.stderr)
+                print(f"  попытка {attempt} ({model}): {last_err}",
+                      file=sys.stderr)
                 continue
             content = r.json()["choices"][0]["message"]["content"].strip()
             return json.loads(content)
         except (requests.RequestException, KeyError, json.JSONDecodeError) as e:
             last_err = f"{type(e).__name__}: {e}"
-            print(f"  попытка {attempt}: {last_err}", file=sys.stderr)
+            print(f"  попытка {attempt} ({model}): {last_err}",
+                  file=sys.stderr)
     raise RuntimeError(f"Groq не ответил после {MAX_RETRIES} попыток: {last_err}")
+
+
+def call_groq_with_fallback(api_key, system, user):
+    """Пробует основную модель, при 429 — фоллбекается на запасную."""
+    print(f"  Пробую {GROQ_MODEL_PRIMARY}...", file=sys.stderr)
+    result = call_groq(api_key, system, user, GROQ_MODEL_PRIMARY)
+    if result is not None:
+        return result, GROQ_MODEL_PRIMARY
+
+    print(f"  Фоллбек на {GROQ_MODEL_FALLBACK}...", file=sys.stderr)
+    result = call_groq(api_key, system, user, GROQ_MODEL_FALLBACK)
+    if result is not None:
+        return result, GROQ_MODEL_FALLBACK
+
+    raise RuntimeError("Обе модели упёрлись в лимит. Подождите до завтра.")
+
 
 
 def validate(resp):
@@ -245,11 +308,13 @@ def main():
 
     system, user = build_prompt()
     try:
-        raw = call_groq(api_key, system, user)
+        raw, model_used = call_groq_with_fallback(api_key, system, user)
         validate(raw)
     except Exception as e:
         print(f"ERROR: {e}", file=sys.stderr)
         sys.exit(1)
+
+    print(f"  Использована модель: {model_used}", file=sys.stderr)
 
     caption = build_caption(raw, today)
     print(f"  Длина поста: {len(caption)} знаков", file=sys.stderr)
