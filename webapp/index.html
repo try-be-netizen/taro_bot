@@ -839,18 +839,21 @@ function showOnboarding() {
         saveZodiac(zodiacId);
         document.getElementById('screenOnboard').style.display = 'none';
         showHeader();
-        renderDaily();
+        renderForMode();
     });
     document.getElementById('skipOnboard').addEventListener('click', () => {
         userZodiac = null;
         document.getElementById('screenOnboard').style.display = 'none';
         showHeader();
-        renderDaily();
+        renderForMode();
     }, { once: true });
 }
 
 function showProfile() {
+    // Прячем все возможные экраны, с которых могли открыть профиль
+    document.getElementById('screenPick').style.display = 'none';
     document.getElementById('screenThemes').style.display = 'none';
+    document.getElementById('screenReveal').classList.remove('is-active');
     document.getElementById('screenProfile').style.display = 'block';
     renderZodiacGrid('profileGrid', userZodiac, (zodiacId) => {
         if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
@@ -858,11 +861,11 @@ function showProfile() {
         saveZodiac(zodiacId);
         document.getElementById('screenProfile').style.display = 'none';
         showHeader();
-        renderDaily();
+        renderForMode();
     });
     document.getElementById('skipProfile').addEventListener('click', () => {
         document.getElementById('screenProfile').style.display = 'none';
-        renderDaily();
+        renderForMode();
     }, { once: true });
 }
 
@@ -871,9 +874,9 @@ function showHeader() {
     const sign = document.getElementById('profileSign');
     if (userZodiac) {
         const z = findZodiac(userZodiac);
-        sign.textContent = z.symbol;
+        sign.textContent = `${z.symbol} ${z.name}`;
     } else {
-        sign.textContent = '☆';
+        sign.textContent = '☆ доверяюсь судьбе';
     }
     header.style.display = 'flex';
     const btn = document.getElementById('profileBtn');
@@ -903,23 +906,34 @@ async function loadData() {
             const predRes = await fetch('predictions.json?t=' + Date.now());
             if (!predRes.ok) throw new Error('predictions.json не загрузился');
             predictions = await predRes.json();
-            renderWeekly();
+        }
+
+        // Сквозной онбординг — проверяем знак в обоих режимах.
+        // Если уже выбран (хоть в daily, хоть в weekly) — пропускаем онбординг.
+        const savedSign = await loadZodiac();
+        if (savedSign) {
+            userZodiac = savedSign;
+            showHeader();
+            renderForMode();
         } else {
-            // daily — проверяем сохранённый знак
-            const savedSign = await loadZodiac();
-            if (savedSign) {
-                userZodiac = savedSign;
-                showHeader();
-                renderDaily();
-            } else {
-                showOnboarding();
-            }
+            // Знак не выбран — показываем онбординг (общий для обоих режимов).
+            // После выбора (или пропуска) — попадаем в нужный экран по режиму.
+            showOnboarding();
         }
     } catch (e) {
         console.error('Load error:', e);
         showError(mode === 'weekly'
             ? 'На эту неделю карты ещё не разложены. Загляните позже — расклад появится в понедельник.'
             : 'Не удалось загрузить данные. Попробуйте чуть позже.');
+    }
+}
+
+// Маршрутизатор после онбординга / при заходе с уже сохранённым знаком
+function renderForMode() {
+    if (mode === 'weekly') {
+        renderWeekly();
+    } else {
+        renderDaily();
     }
 }
 
