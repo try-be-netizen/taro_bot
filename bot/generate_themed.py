@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import json
 import os
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -102,6 +103,67 @@ def load_bank():
 def save_bank(bank):
     with BANK_PATH.open("w", encoding="utf-8") as f:
         json.dump(bank, f, ensure_ascii=False, indent=2)
+
+
+def commit_and_push(progress_label):
+    """Коммитит и пушит текущее состояние predictions_bank.json в репо.
+
+    Это ключевая функция для долгих прогонов — если workflow упадёт по
+    таймауту GitHub Actions (60 мин), все промежуточные сохранения уже
+    будут в репо благодаря этим коммитам.
+
+    Возвращает True если успешно, False если git недоступен или нет
+    изменений (это нормально — просто пропускаем).
+    """
+    # Проверяем что мы внутри git-репо. Локально тестируя — нет, в Actions — да.
+    if not (ROOT / ".git").exists():
+        print(f"    (не в git-репо, пропускаю commit)", file=sys.stderr)
+        return False
+
+    try:
+        # Настраиваем git identity (нужно для commit в Actions)
+        subprocess.run(["git", "config", "user.name", "github-actions[bot]"],
+                       cwd=ROOT, check=True, capture_output=True)
+        subprocess.run(["git", "config", "user.email",
+                        "41898282+github-actions[bot]@users.noreply.github.com"],
+                       cwd=ROOT, check=True, capture_output=True)
+
+        # Проверяем есть ли изменения
+        diff = subprocess.run(
+            ["git", "diff", "--quiet", "webapp/predictions_bank.json"],
+            cwd=ROOT, capture_output=True
+        )
+        if diff.returncode == 0:
+            # Нет изменений — нечего коммитить
+            return False
+
+        # Коммит
+        subprocess.run(
+            ["git", "add", "webapp/predictions_bank.json"],
+            cwd=ROOT, check=True, capture_output=True
+        )
+        subprocess.run(
+            ["git", "commit", "-m", f"chore: themed bank progress ({progress_label})"],
+            cwd=ROOT, check=True, capture_output=True
+        )
+        # Пуш — может упасть из-за конфликтов или прав
+        push = subprocess.run(
+            ["git", "push"],
+            cwd=ROOT, capture_output=True, text=True
+        )
+        if push.returncode != 0:
+            print(f"    git push: {push.stderr.strip()[:200]}", file=sys.stderr)
+            return False
+
+        print(f"    ✓ commit & push: {progress_label}", file=sys.stderr)
+        return True
+    except subprocess.CalledProcessError as e:
+        print(f"    git error: {e.stderr.decode()[:200] if e.stderr else e}",
+              file=sys.stderr)
+        return False
+    except Exception as e:
+        print(f"    commit error: {type(e).__name__}: {e}", file=sys.stderr)
+        return False
 
 
 # ============================================================
@@ -369,13 +431,17 @@ def main():
             print(f"  ERROR: {e}", file=sys.stderr)
             failed.append(card_id)
 
-        # Промежуточные сохранения каждые 5 карт
+        # Промежуточные сохранения каждые 5 карт + коммит в репо.
+        # КРИТИЧНО: без коммита, если workflow упадёт по таймауту,
+        # весь прогресс пропадёт вместе с runner-ом.
         if i % 5 == 0:
             save_bank(bank)
             elapsed = time.time() - start
             print(f"  (сохранено, прошло {elapsed:.0f} сек)", file=sys.stderr)
+            commit_and_push(f"{i}/{total} cards")
 
     save_bank(bank)
+    commit_and_push(f"final {success + skipped}/{total} cards")
     elapsed = time.time() - start
     print(f"\n✓ Успешно: {success}/{total}", file=sys.stderr)
     print(f"  Пропущено (уже было): {skipped}", file=sys.stderr)
