@@ -1,9 +1,9 @@
 name: Daily Fact
 
-# Каждый день в 11:00 МСК = 8:00 UTC
+# Вт-Вс в 15:00 МСК = 12:00 UTC (в понедельник вместо карты дня — карта недели)
 on:
   schedule:
-    - cron: "0 8 * * *"
+    - cron: "0 12 * * 0,2,3,4,5,6"
   workflow_dispatch:
 
 permissions:
