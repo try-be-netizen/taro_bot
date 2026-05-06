@@ -1,9 +1,9 @@
 name: Daily Horoscope
 
-# Один раз в день: 9:00 МСК = 6:00 UTC
+# Каждый день 11:00 МСК = 8:00 UTC
 on:
   schedule:
-    - cron: "0 6 * * *"
+    - cron: "0 8 * * *"
   workflow_dispatch:
 
 permissions:
