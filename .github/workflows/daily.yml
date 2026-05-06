@@ -1,16 +1,16 @@
-name: Daily Fact
+name: Daily Horoscope
 
-# Вт-Вс в 15:00 МСК = 12:00 UTC (в понедельник вместо карты дня — карта недели)
+# Каждый день 11:00 МСК = 8:00 UTC
 on:
   schedule:
-    - cron: "0 12 * * 0,2,3,4,5,6"
+    - cron: "0 8 * * *"
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: tarot-daily-fact
+  group: tarot-horoscope
   cancel-in-progress: false
 
 jobs:
@@ -30,22 +30,10 @@ jobs:
       - name: Install dependencies
         run: pip install -r bot/requirements.txt
 
-      - name: Post daily fact
+      - name: Post horoscope
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          WEBAPP_URL: ${{ secrets.WEBAPP_URL }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-        run: python bot/daily_fact.py
-
-      - name: Commit updated history
-        run: |
-          git config user.name  "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if git diff --quiet bot/history.json; then
-            echo "history.json не изменился — коммит не нужен"
-          else
-            git add bot/history.json
-            git commit -m "chore: daily fact history $(date -u +'%Y-%m-%d')"
-            git push
-          fi
+          WEBAPP_URL: ${{ secrets.WEBAPP_URL }}
+        run: python bot/astro_post.py
