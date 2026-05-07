@@ -1,16 +1,17 @@
-name: Daily Horoscope
+name: Daily Fact
 
-# Каждый день 11:00 МСК = 8:00 UTC
+# ОТКЛЮЧЕНО ВРЕМЕННО — только ручной запуск через workflow_dispatch.
+# Чтобы вернуть автоматическую публикацию, раскомментируй блок schedule
+# и выбери удобное время. Например:
+#   - cron: "0 12 * * 0,2,3,4,5,6"   # вт-вс 15:00 МСК
 on:
-  schedule:
-    - cron: "0 8 * * *"
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: tarot-horoscope
+  group: tarot-daily-fact
   cancel-in-progress: false
 
 jobs:
@@ -30,10 +31,22 @@ jobs:
       - name: Install dependencies
         run: pip install -r bot/requirements.txt
 
-      - name: Post horoscope
+      - name: Post daily fact
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           WEBAPP_URL: ${{ secrets.WEBAPP_URL }}
-        run: python bot/astro_post.py
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: python bot/daily_fact.py
+
+      - name: Commit updated history
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet bot/history.json; then
+            echo "history.json не изменился — коммит не нужен"
+          else
+            git add bot/history.json
+            git commit -m "chore: daily fact history $(date -u +'%Y-%m-%d')"
+            git push
+          fi
