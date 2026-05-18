@@ -1,9 +1,9 @@
 name: Weekly Post
 
-# Понедельник 9:00 МСК = 6:00 UTC
+# Понедельник 7:00 МСК = 6:00 UTC
 on:
   schedule:
-    - cron: "0 6 * * 1"
+    - cron: "0 4 * * 1"
   workflow_dispatch:
 
 permissions:
